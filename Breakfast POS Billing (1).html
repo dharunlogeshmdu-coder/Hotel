@@ -30,7 +30,6 @@
     --shadow-md: 0 12px 32px rgba(13,92,86,0.10);
     --shadow-lg: 0 20px 50px rgba(15,23,42,0.14);
 
-    /* Dark Navigation Hub Theme */
     --nav-dark-bg: #0A1220;
     --nav-card-bg: #111C30;
     --nav-active-bg: #0D2B26;
@@ -40,7 +39,6 @@
     --nav-border: #1D2A40;
   }
 
-  /* Full Dark Mode Variables */
   body.dark-mode{
     --bg:#080D18;
     --panel:#0F1A2C;
@@ -71,14 +69,12 @@
 
   .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 110px;}
 
-  /* Topbar */
   .topbar{
     display:flex;flex-direction:column;gap:20px;padding:32px 26px 26px;border-radius:22px;
     background:linear-gradient(135deg, #051F1C 0%, #073A35 45%, #0B5850 100%);color:#FFFFFF;
     position:relative;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,0.08);
   }
 
-  /* Feel Good Watermark Background */
   .topbar::before{
     content:"";
     position:absolute;
@@ -94,7 +90,6 @@
     background:radial-gradient(circle, rgba(224,138,44,0.22) 0%, transparent 70%);pointer-events:none;
   }
 
-  /* Center Brand Wrap with Crest Logo */
   .headerCenterRow{
     display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:13px;position:relative;z-index:2;
   }
@@ -113,7 +108,6 @@
     text-shadow: 0 2px 12px rgba(0,0,0,0.35);
   }
 
-  /* Stats Cards Grid */
   .statsGridRow{
     display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;width:100%;position:relative;z-index:2;
   }
@@ -134,7 +128,6 @@
   .stat-pill .num{font-family:'IBM Plex Mono', monospace;font-size:22px;font-weight:800;color:#FFFFFF;}
   .stat-pill.pendingBox .num{color:#FF9B93;}
 
-  /* Actions Bar */
   .topActionsRow{
     display:flex;gap:10px;width:100%;position:relative;z-index:2;flex-wrap:wrap;
   }
@@ -149,7 +142,6 @@
   .theme-toggle-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#FFFFFF;}
   .theme-toggle-btn:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px);}
 
-  /* Layout Grid */
   .grid{display:grid;grid-template-columns:1fr 410px;gap:22px;align-items:start;}
   @media (max-width:960px){
     .grid{grid-template-columns:1fr;}
@@ -179,7 +171,6 @@
   .linkbtn:hover{opacity:0.7;}
   .linkbtn.danger{color:var(--coral);}
 
-  /* Category tabs */
   .catTabs{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
   .catTab{
     padding:8px 15px;border-radius:30px;border:1.5px solid var(--line);
@@ -189,7 +180,6 @@
   .catTab:hover{border-color:var(--teal);color:var(--teal);}
   .catTab.active{background:var(--teal);color:var(--btn-text);border-color:var(--teal);box-shadow:0 4px 12px rgba(13,110,99,0.3);}
 
-  /* Menu items grid */
   .searchRow{margin-bottom:14px;}
   .menuGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:11px;}
   @media(max-width:480px){
@@ -222,7 +212,6 @@
   }
   .btn-analyze:hover{border-color:var(--teal);}
 
-  /* Manage Menu Panel */
   #manageMenuPanel{display:none;margin-bottom:16px;padding:16px;border:1.5px dashed var(--amber);border-radius:14px;background:var(--amber-light);}
   .panelHeaderRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
   .panelCloseBtn{
@@ -247,7 +236,6 @@
   .addItemBtn:hover{filter:brightness(1.08);}
   @media(min-width:600px){.addItemBtn{grid-column: auto;}}
 
-  /* Inputs & Form Styling */
   label{display:block;font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:11px 0 5px;}
   input, select, textarea{
     width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;
@@ -258,7 +246,6 @@
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
   .optTag{font-size:9.5px;color:var(--muted);font-weight:600;text-transform:none;}
 
-  /* Quick Item Search in Current Bill Box */
   .cartSearchBox{position:relative;margin-bottom:12px;}
   .cartSearchBox input{border:2px solid var(--teal);background:var(--teal-light);color:var(--ink);font-weight:700;}
   .cartDropdown{
@@ -276,7 +263,6 @@
   .cartDropdownItem .cdaNm{font-weight:800;font-size:13px;color:var(--ink);}
   .cartDropdownItem .cdaPr{font-family:'IBM Plex Mono', monospace;font-weight:800;color:var(--teal);font-size:12.5px;}
 
-  /* Chip Selectors */
   .chipGroup{display:grid;grid-template-columns:repeat(3, 1fr);gap:7px;margin-top:2px;}
   .chipGroup.twoCol{grid-template-columns:1fr 1fr;}
   .chipOption{
@@ -289,7 +275,6 @@
   .chipOption.status-paid.active{background:#D1FAE5;border-color:#059669;color:#065F46;}
   .chipOption.status-pending.active{background:var(--coral-light);border-color:#DC2626;color:var(--coral);}
 
-  /* Cart List & Touch Buttons */
   .cartList{margin-top:9px;max-height:240px;overflow-y:auto;}
   .cartRow{padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
   .cartMain{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;}
@@ -311,7 +296,6 @@
   .modInput{margin-top:4px;font-size:11px;padding:6px 9px;border-radius:7px;border:1px dashed var(--line);width:100%;}
   .cartEmpty{text-align:center;color:var(--muted);font-size:12.5px;padding:24px 0;font-weight:600;}
 
-  /* Totals */
   .totalsbox{
     margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--teal-light);
     border:1.5px solid var(--line);font-family:'IBM Plex Mono', monospace;font-size:12.5px;
@@ -330,7 +314,6 @@
   .btn.secondary:hover:not(:disabled){background:var(--teal-light);transform:none;}
   .btn:disabled{opacity:0.4;cursor:not-allowed;}
 
-  /* Records List */
   .filters{display:flex;gap:9px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap;}
   .filters > div{flex:1;min-width:110px;}
   .filters label{margin:0 0 5px;}
@@ -370,7 +353,6 @@
   .empty{text-align:center;color:var(--muted);padding:28px 0;font-size:13px;font-weight:600;}
   .small{font-size:11px;color:var(--muted);margin-top:6px;font-weight:600;}
 
-  /* Hub Responsive Layout */
   .hubLayout{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start;}
   @media (max-width:960px){
     .hubLayout{grid-template-columns:1fr;}
@@ -407,7 +389,6 @@
   .hubTabPane.activePane{display:block;animation:fadeIn .25s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-  /* Analytics Panels */
   .analyticsGrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(135px,1fr));gap:11px;margin-bottom:18px;}
   .statCard{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;transition:transform .15s;}
   .statCard:hover{transform:translateY(-2px);}
@@ -418,7 +399,6 @@
   .historyTable th{background:var(--bg);color:var(--ink);font-size:10.5px;text-transform:uppercase;font-weight:800;}
   .historyTable tr:hover td{background:var(--bg);}
 
-  /* Calendar */
   .calHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
   .calHeader h4{margin:0;font-size:14px;color:var(--ink);font-weight:800;}
   .calNavBtn{background:var(--panel);border:1.5px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;font-weight:800;font-size:11px;color:var(--ink);transition:border-color .15s;}
@@ -435,7 +415,6 @@
   .calDayProfit{font-family:'IBM Plex Mono', monospace;font-size:9px;color:#10B981;font-weight:800;}
   .calDayRev{font-family:'IBM Plex Mono', monospace;font-size:8.5px;color:var(--muted);font-weight:700;}
 
-  /* Bars */
   .barContainer{height:13px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:7px;display:flex;}
   .barSegment{height:100%;}
   .barUPI{background:#10B981;}
@@ -444,7 +423,6 @@
   .targetProgress{height:13px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:7px;}
   .targetFill{height:100%;background:linear-gradient(90deg, var(--teal), var(--teal-dark));width:0%;transition:width .4s ease;}
 
-  /* Receipt Modal */
   .modalOverlay{display:none;position:fixed;inset:0;background:rgba(8,13,24,0.72);backdrop-filter:blur(2px);z-index:120;align-items:center;justify-content:center;padding:16px;}
   .modalOverlay.show{display:flex;}
   .receiptCard{background:#fff;color:#000;border-radius:16px;padding:0;width:300px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 70px rgba(0,0,0,0.5);}
@@ -463,7 +441,6 @@
   .modalActions .printB{background:#073D39;color:#fff;}
   .modalActions .closeB{background:#F1F5F9;color:#000;}
 
-  /* --- SINGLE-PAGE CLEAN THERMAL PRINTING FIX --- */
   @page {
     size: 58mm auto;
     margin: 0;
@@ -476,7 +453,6 @@
       width: 58mm !important;
       height: auto !important;
     }
-    /* Hide the entire web app so it takes 0px height and prevents extra blank pages */
     .wrap {
       display: none !important;
     }
@@ -521,9 +497,7 @@
 <body>
 <div class="wrap">
 
-  <!-- CENTERED REDESIGNED TOPBAR WITH WATERMARK ART -->
   <div class="topbar">
-    
     <div class="headerCenterRow">
       <div class="hotelCrestBadge" id="hotelLogoDisplay">SB</div>
       <div class="brandText">
@@ -531,7 +505,6 @@
       </div>
     </div>
 
-    <!-- KPI Tiles -->
     <div class="statsGridRow">
       <div class="stat-pill">
         <div class="lbl">Bills Today</div>
@@ -547,7 +520,6 @@
       </div>
     </div>
 
-    <!-- Actions & Theme Toggle -->
     <div class="topActionsRow">
       <button class="theme-toggle-btn" id="themeToggleBtn">🌙 Dark Mode</button>
       <button class="top-btn zrep" id="openZReportBtn">📋 Z-Report (Day Close)</button>
@@ -555,14 +527,11 @@
     </div>
   </div>
 
-  <!-- MAIN POS PAGE -->
   <div id="posView">
     <div class="grid">
-      <!-- MENU -->
       <div class="card">
         <h2>Menu Catalog <button class="linkbtn" id="toggleManageMenu">+ Manage items &amp; stock</button></h2>
 
-        <!-- MANAGE MENU PANEL -->
         <div id="manageMenuPanel">
           <div class="panelHeaderRow">
             <label style="margin:0;font-size:11.5px;color:var(--amber);">Add New Menu Item</label>
@@ -596,7 +565,6 @@
         <div class="menuGrid" id="menuGrid"></div>
       </div>
 
-      <!-- CART / BILL -->
       <div class="card cartCardContainer" id="cartCardContainer">
         <div class="cartMobileHeader" id="cartMobileToggle">
           <div style="font-weight:800;font-size:14px;color:var(--teal);display:flex;align-items:center;gap:6px;">
@@ -613,7 +581,6 @@
           <button class="linkbtn danger" id="clearCartBtn" style="display:none;">Clear All</button>
         </h2>
 
-        <!-- TYPE & SELECT DROPDOWN -->
         <label style="margin-top:0;">⚡ Type to Add Menu Item</label>
         <div class="cartSearchBox">
           <input id="cartItemSearch" placeholder="Type letter (e.g. 't' for Tea, 'i' for Idli)…" autocomplete="off">
@@ -688,7 +655,6 @@
       </div>
     </div>
 
-    <!-- BILLING RECORDS -->
     <div class="card">
       <h2>Billing Records &amp; Settlement</h2>
       <div class="filters">
@@ -706,10 +672,8 @@
     </div>
   </div>
 
-  <!-- OVERALL SALES ANALYTICS PAGE -->
   <div id="overallAnalyzeView">
     <div class="hubLayout">
-      <!-- SIDEBAR -->
       <div class="navHubSidebar">
         <div class="navHubHeader">
           <div class="hubLogoBadge" id="hubLogoBadge">SB</div>
@@ -785,7 +749,6 @@
         </div>
       </div>
 
-      <!-- MAIN HUB CONTENT AREA -->
       <div class="hubContentArea">
         <div class="card" style="padding:12px 14px;margin-bottom:12px;">
           <div class="filters" style="margin-bottom:0;">
@@ -802,7 +765,6 @@
           </div>
         </div>
 
-        <!-- 1. OVERVIEW -->
         <div class="hubTabPane activePane" id="tab-kpi">
           <div class="card">
             <h2>⚡ Business Performance</h2>
@@ -846,7 +808,6 @@
           </div>
         </div>
 
-        <!-- 2. MASTER CALENDAR -->
         <div class="hubTabPane" id="tab-calendar">
           <div class="card">
             <h2>🗓 Profit Calendar</h2>
@@ -870,7 +831,6 @@
           </div>
         </div>
 
-        <!-- 3. RUSH-HOUR HEATMAP -->
         <div class="hubTabPane" id="tab-rush">
           <div class="card">
             <h2>⏰ Rush-Hour Heatmap</h2>
@@ -889,7 +849,6 @@
           </div>
         </div>
 
-        <!-- 4. BOSTON MATRIX -->
         <div class="hubTabPane" id="tab-matrix">
           <div class="card">
             <h2>⭐ Menu Matrix</h2>
@@ -937,7 +896,6 @@
           </div>
         </div>
 
-        <!-- 5. REPEAT CUSTOMERS -->
         <div class="hubTabPane" id="tab-customers">
           <div class="card">
             <h2>👥 Repeat Customers</h2>
@@ -956,7 +914,6 @@
           </div>
         </div>
 
-        <!-- 6. INVENTORY BURN -->
         <div class="hubTabPane" id="tab-inventory">
           <div class="card">
             <h2>📦 Ingredient Burn</h2>
@@ -974,7 +931,6 @@
           </div>
         </div>
 
-        <!-- 7. DEMAND INSIGHTS: SOLD OUT ASKS + UNSOLD ITEMS -->
         <div class="hubTabPane" id="tab-demand">
           <div class="card">
             <h2>
@@ -1019,7 +975,6 @@
     </div>
   </div>
 
-  <!-- SINGLE ITEM ANALYTICS PAGE -->
   <div id="itemAnalyzeView">
     <div class="card">
       <h2>
@@ -1066,7 +1021,6 @@
   <div class="small" id="statusLine">Ready.</div>
 </div>
 
-<!-- RECEIPT MODAL -->
 <div class="modalOverlay" id="modalOverlay">
   <div class="receiptCard">
     <div id="receiptArea"></div>
@@ -1129,7 +1083,6 @@ function updateBrandDisplays(hotelName){
   $('hubLogoBadge').textContent = inits;
 }
 
-// Storage abstraction with localStorage fallback
 async function storageGet(key){
   if(window.storage && window.storage.get){
     try{
@@ -1731,7 +1684,6 @@ function renderOverallAnalytics(){
 
   renderCalendar();
 
-  // ---- DEMAND INSIGHTS: missed (sold-out) requests + unsold items ----
   const filteredDemand = filterD ? demandLog.filter(d => d.date === filterD) : demandLog;
   const missedMap = {};
   filteredDemand.forEach(d => {
