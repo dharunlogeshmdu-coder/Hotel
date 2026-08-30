@@ -3,91 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Breakfast POS Billing & Analytics</title>
+<title>Hotel & Breakfast POS Multi-Tenant System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Outfit:wght@700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F3F5F9;
-    --panel:#FFFFFF;
-    --ink:#0F172A;
-    --teal:#0D6E63;
-    --teal-dark:#073D39;
-    --teal-light:#E7F5F1;
-    --amber:#E08A2C;
-    --amber-light:#FDF3E7;
-    --coral:#E1483A;
-    --coral-light:#FCEAE8;
-    --line:#E2E8F0;
-    --muted:#64748B;
-    --btn-text:#FFFFFF;
-    --star:#8E44AD;
-    --plow:#2980B9;
-    --puzzle:#D35400;
-    --dog:#7F8C8D;
-    --radius:18px;
-    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04), 0 2px 8px rgba(15,23,42,0.04);
-    --shadow-md: 0 12px 32px rgba(13,92,86,0.10);
-    --shadow-lg: 0 20px 50px rgba(15,23,42,0.14);
+    --bg:#0A0F1D;
+    --panel:#11192E;
+    --ink:#F8FAFC;
+    --teal:#06D6A0;
+    --teal-dark:#05B386;
+    --teal-light:#0D2B26;
+    --amber:#F59E0B;
+    --amber-light:#2A1F0A;
+    --coral:#EF4444;
+    --coral-light:#2A1416;
+    --line:#1E2A4A;
+    --muted:#94A3B8;
+    --btn-text:#052014;
+    --star:#A78BFA;
+    --plow:#38BDF8;
+    --puzzle:#F59E0B;
+    --dog:#94A3B8;
+    --radius:16px;
+    --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
+    --shadow-md: 0 14px 34px rgba(0,0,0,0.45), 0 0 20px rgba(6,214,160,0.08);
+    --shadow-lg: 0 24px 60px rgba(0,0,0,0.55);
 
-    --nav-dark-bg: #0A1220;
-    --nav-card-bg: #111C30;
+    --nav-dark-bg: #060913;
+    --nav-card-bg: #11192E;
     --nav-active-bg: #0D2B26;
-    --nav-active-border: #00CE9A;
-    --nav-text-green: #17E8AE;
-    --nav-text-dim: #90A0B7;
-    --nav-border: #1D2A40;
+    --nav-active-border: #06D6A0;
+    --nav-text-green: #06D6A0;
+    --nav-text-dim: #94A3B8;
+    --nav-border: #1E2A4A;
   }
 
   body.dark-mode{
-    --bg:#080D18;
-    --panel:#0F1A2C;
-    --ink:#F1F5F9;
-    --teal:#17E8AE;
-    --teal-dark:#00B98C;
-    --teal-light:#0D241F;
-    --amber:#F5A93F;
-    --amber-light:#25190A;
-    --coral:#FF6B62;
+    --bg:#060913;
+    --panel:#0D1426;
+    --ink:#F8FAFC;
+    --teal:#2563EB;
+    --teal-dark:#1D4ED8;
+    --teal-light:#0F1D3D;
+    --amber:#F59E0B;
+    --amber-light:#2A1F0A;
+    --coral:#EF4444;
     --coral-light:#2A1416;
-    --line:#1E2C45;
-    --muted:#8FA0B8;
-    --btn-text:#052620;
-    --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
-    --shadow-md: 0 14px 34px rgba(0,0,0,0.5);
+    --line:#1E2A4A;
+    --muted:#94A3B8;
+    --btn-text:#FFFFFF;
+    --shadow-sm: 0 2px 10px rgba(0,0,0,0.4);
+    --shadow-md: 0 14px 34px rgba(0,0,0,0.5), 0 0 20px rgba(37,99,235,0.12);
     --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html{scroll-behavior:smooth;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans', sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s ease, color .25s ease;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter', sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s ease, color .25s ease;}
+  h1,h2,h3,h4,.brandText h1,.card h2,.hubBrandTitles h3{font-family:'Plus Jakarta Sans', sans-serif !important;letter-spacing:-0.02em;}
   ::selection{background:var(--teal);color:#fff;}
   ::-webkit-scrollbar{width:8px;height:8px;}
   ::-webkit-scrollbar-track{background:transparent;}
   ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
   ::-webkit-scrollbar-thumb:hover{background:var(--muted);}
 
+  /* Auth Overlay & Form Styling */
+  #authOverlay {
+    position: fixed; inset: 0; background: linear-gradient(135deg, #060913 0%, #0A0F1D 45%, #0D2B26 100%);
+    z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .authCard {
+    background: var(--panel); border-radius: 20px; padding: 32px 28px; width: 100%; max-width: 440px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4); text-align: center; border: 1px solid var(--line);
+  }
+  .authCard h2 { margin: 0 0 6px; font-size: 22px; font-weight: 800; color: var(--ink); }
+  .authCard p { margin: 0 0 18px; font-size: 13px; color: var(--muted); }
+  .authCard input { margin-bottom: 12px; text-align: left; }
+  .authMsg { font-size: 12px; font-weight: 700; margin-bottom: 12px; display: none; padding: 8px; border-radius: 8px; }
+  .authMsg.error { color: var(--coral); background: var(--coral-light); display: block; }
+  .authMsg.success { color: #065F46; background: #D1FAE5; display: block; }
+  .authSwitchRow { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
+  .authSwitchRow a { color: var(--teal); font-weight: 800; cursor: pointer; text-decoration: underline; }
+
   .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 110px;}
 
   .topbar{
     display:flex;flex-direction:column;gap:20px;padding:32px 26px 26px;border-radius:22px;
-    background:linear-gradient(135deg, #051F1C 0%, #073A35 45%, #0B5850 100%);color:#FFFFFF;
+    background:linear-gradient(135deg, #060913 0%, #0A0F1D 45%, #0D2B26 100%);color:#FFFFFF;
     position:relative;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,0.08);
   }
 
   .topbar::before{
-    content:"";
-    position:absolute;
-    inset:0;
+    content:"";position:absolute;inset:0;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" opacity="0.06"><g fill="none" stroke="%23ffffff" stroke-width="2"><circle cx="70" cy="100" r="45"/><path d="M50 100 Q70 70 90 100 T130 100"/><path d="M520 140 C520 90 560 90 560 140 Z"/><path d="M535 75 Q540 60 545 75 T555 75"/><path d="M280 40 Q300 20 320 40 T360 40"/></g></svg>');
-    background-repeat: repeat-x;
-    background-position: center bottom;
-    background-size: 500px auto;
-    pointer-events:none;
+    background-repeat: repeat-x;background-position: center bottom;background-size: 500px auto;pointer-events:none;
   }
   .topbar::after{
     content:"";position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;
-    background:radial-gradient(circle, rgba(224,138,44,0.22) 0%, transparent 70%);pointer-events:none;
+    background:radial-gradient(circle, rgba(6,214,160,0.22) 0%, transparent 70%);pointer-events:none;
   }
 
   .headerCenterRow{
@@ -100,12 +114,24 @@
     color:#2A1706;font-family:'Plus Jakarta Sans', sans-serif;font-weight:900;
     font-size:20px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;
     box-shadow:0 0 0 3px rgba(255,255,255,0.18), 0 0 0 6px rgba(23,232,174,0.28), 0 10px 26px rgba(0,0,0,0.35);
-    text-transform:uppercase;
+    text-transform:uppercase;overflow:hidden;
   }
+  .hotelCrestBadge img{width:100%;height:100%;object-fit:cover;}
 
   .brandText h1{
     font-size:30px;font-weight:900;margin:0;letter-spacing:-0.7px;color:#FFFFFF;line-height:1.2;
     text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .userGreeting {
+    font-size: 11.5px; font-weight: 700; color: #06D6A0; margin-top: 4px;
+  }
+  .brand-glow-tag{
+    font-family:'Outfit', sans-serif !important;
+    background: linear-gradient(135deg, #06D6A0 0%, #05B386 55%, #038F69 100%);
+    color:#052014 !important;font-weight:900;font-size:10.5px;padding:4px 12px;border-radius:20px;
+    letter-spacing:0.8px;display:inline-flex;align-items:center;gap:6px;
+    box-shadow:0 0 16px rgba(6,214,160,0.35);text-transform:uppercase;
+    border:1px solid rgba(255,255,255,0.35);margin-top:8px;
   }
 
   .statsGridRow{
@@ -139,6 +165,7 @@
   .top-btn:hover{transform:translateY(-2px);background:#F8FAFC;box-shadow:0 8px 20px rgba(0,0,0,0.22);}
   .top-btn:active{transform:translateY(0);}
   .top-btn.zrep{background:linear-gradient(135deg, #F2A93F 0%, #C9530A 100%);color:#FFFFFF;box-shadow:0 6px 18px rgba(201,83,10,0.4);}
+  .top-btn.admin-hub-btn{background:linear-gradient(135deg, #8E44AD 0%, #5B2C6F 100%);color:#FFFFFF;box-shadow:0 6px 18px rgba(142,68,173,0.4);display:none;}
   .theme-toggle-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#FFFFFF;}
   .theme-toggle-btn:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px);}
 
@@ -239,7 +266,7 @@
   label{display:block;font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:11px 0 5px;}
   input, select, textarea{
     width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;
-    font-family:'Plus Jakarta Sans';font-size:13px;background:var(--panel);color:var(--ink);font-weight:600;
+    font-family:'Inter';font-size:13px;background:var(--panel);color:var(--ink);font-weight:600;
     transition:border-color .15s ease, box-shadow .15s ease;
   }
   input:focus, select:focus, textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,110,99,0.14);}
@@ -306,12 +333,13 @@
   .btn{
     width:100%;margin-top:14px;padding:13px;border:none;border-radius:11px;
     background:linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);color:var(--btn-text);font-weight:800;font-size:13.5px;cursor:pointer;
-    font-family:'Plus Jakarta Sans';box-shadow:0 6px 16px rgba(13,110,99,0.3);transition:transform .15s ease, box-shadow .15s ease;
+    font-family:'Inter';box-shadow:0 6px 18px rgba(6,214,160,0.25);transition:transform .15s ease, box-shadow .15s ease;
   }
-  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 22px rgba(13,110,99,0.36);}
+  .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 26px rgba(6,214,160,0.32);}
   .btn:active:not(:disabled){transform:translateY(0);}
   .btn.secondary{background:transparent;color:var(--teal);border:2px solid var(--teal);box-shadow:none;}
   .btn.secondary:hover:not(:disabled){background:var(--teal-light);transform:none;}
+  .btn.danger-action{background:#DC2626;color:#FFF;box-shadow:0 4px 12px rgba(220,38,38,0.3);}
   .btn:disabled{opacity:0.4;cursor:not-allowed;}
 
   .filters{display:flex;gap:9px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap;}
@@ -336,6 +364,7 @@
   .badge{display:inline-block;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;padding:3px 8px;border-radius:12px;}
   .badge.paid{background:#D1FAE5;color:#065F46;}
   .badge.pending{background:var(--coral-light);color:var(--coral);}
+  .badge.admin-badge{background:#E8DAEF;color:#6C3483;}
 
   .status-toggle-btn{
     padding:6px 10px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--bg);
@@ -368,8 +397,9 @@
   .hubLogoBadge{
     width:38px;height:38px;border-radius:50%;
     background:radial-gradient(circle at 35% 35%, #FFF6E5, #F3A83E 50%, #C9530A 100%);
-    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#2A1706;
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#2A1706;overflow:hidden;
   }
+  .hubLogoBadge img{width:100%;height:100%;object-fit:cover;}
   .hubBrandTitles h3{margin:0;font-size:13.5px;font-weight:800;color:#FFFFFF;}
   .hubBrandTitles span{font-size:10px;font-weight:700;color:#17E8AE;letter-spacing:0.5px;text-transform:uppercase;}
   .navHubSectionTitle{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#64748B;margin:0 0 9px 4px;}
@@ -453,7 +483,7 @@
       width: 58mm !important;
       height: auto !important;
     }
-    .wrap {
+    .wrap, #authOverlay {
       display: none !important;
     }
     .modalOverlay {
@@ -495,13 +525,49 @@
 </style>
 </head>
 <body>
-<div class="wrap">
 
+<!-- AUTHENTICATION OVERLAY -->
+<div id="authOverlay">
+  <!-- LOGIN VIEW -->
+  <div class="authCard" id="loginCard">
+    <div class="hotelCrestBadge" style="margin: 0 auto 14px;" id="authLogoLogin">POS</div>
+    <h2>Billing Terminal Login</h2>
+    <p>Sign in with your Email ID &amp; Password</p>
+    <div class="authMsg" id="loginMsg"></div>
+    <input type="email" id="loginEmail" placeholder="Email Address (e.g. dharunlogeshmdu@gmail.com)" autocomplete="email" value="dharunlogeshmdu@gmail.com">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button class="btn" id="loginBtn" style="margin-top:6px;">Sign In to Terminal</button>
+    <div class="authSwitchRow">
+      New Hotel / Client? <a id="showRegisterLink">Create New Rental ID</a>
+    </div>
+  </div>
+
+  <!-- REGISTER / CREATE RENTAL ID VIEW -->
+  <div class="authCard" id="registerCard" style="display:none;">
+    <div class="hotelCrestBadge" style="margin: 0 auto 14px;" id="authLogoReg">POS</div>
+    <h2>Register Rental Account</h2>
+    <p>Set up your hotel name, logo &amp; credentials</p>
+    <div class="authMsg" id="regMsg"></div>
+    <input type="text" id="regHotelName" placeholder="Hotel / Restaurant Name">
+    <input type="text" id="regOwnerName" placeholder="Owner / Manager Name">
+    <input type="text" id="regLogoUrl" placeholder="Logo Image URL (Optional)">
+    <input type="email" id="regEmail" placeholder="Login Email ID">
+    <input type="password" id="regPassword" placeholder="Create Password (min 6 chars)">
+    <button class="btn" id="registerBtn" style="margin-top:6px;">Register &amp; Launch POS</button>
+    <div class="authSwitchRow">
+      Already have a rental ID? <a id="showLoginLink">Back to Login</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
   <div class="topbar">
     <div class="headerCenterRow">
-      <div class="hotelCrestBadge" id="hotelLogoDisplay">SB</div>
+      <div class="hotelCrestBadge" id="hotelLogoDisplay">POS</div>
       <div class="brandText">
         <h1 id="resortNameDisplay">Sunrise Breakfast Billing</h1>
+        <div class="userGreeting" id="currentUserGreeting">Logged in as: Staff</div>
+        <span class="brand-glow-tag">Multi-Tenant POS</span>
       </div>
     </div>
 
@@ -521,12 +587,15 @@
     </div>
 
     <div class="topActionsRow">
-      <button class="theme-toggle-btn" id="themeToggleBtn">🌙 Dark Mode</button>
+      <button class="theme-toggle-btn" id="themeToggleBtn">🔵 Ocean Theme</button>
       <button class="top-btn zrep" id="openZReportBtn">📋 Z-Report (Day Close)</button>
-      <button class="top-btn" id="openOverallBtn">📈 Navigation Hub</button>
+      <button class="top-btn admin-hub-btn" id="openAdminHubBtn">👑 Admin Rental Hub</button>
+      <button class="top-btn" id="openOverallBtn">📈 Analytics Hub</button>
+      <button class="top-btn" id="logoutBtn" style="min-width:110px;background:#FEE2E2;color:#991B1B;">🔒 Log Out</button>
     </div>
   </div>
 
+  <!-- 1. MAIN POS VIEW -->
   <div id="posView">
     <div class="grid">
       <div class="card">
@@ -637,11 +706,13 @@
         </div>
 
         <button class="btn" id="saveBillBtn" disabled>Save &amp; Print Bill</button>
-        <button class="linkbtn" id="toggleSettings" style="margin-top:12px;display:block;">⚙ Configure Resort &amp; Target Defaults</button>
+        <button class="linkbtn" id="toggleSettings" style="margin-top:12px;display:block;">⚙ Configure Hotel &amp; Logo Settings</button>
 
         <div id="settingsPanel" style="display:none;margin-top:14px;background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--line);">
-          <label style="margin-top:0;">Resort / Hotel Name</label>
-          <input id="setResortName" placeholder="Your Resort Name">
+          <label style="margin-top:0;">Hotel / Restaurant Name</label>
+          <input id="setResortName" placeholder="Your Hotel Name">
+          <label>Logo Image URL</label>
+          <input id="setLogoUrl" placeholder="https://.../logo.png">
           <label>Default Tax %</label>
           <input id="setTaxPct" type="number" min="0">
           <label>Default Staff Name</label>
@@ -672,11 +743,71 @@
     </div>
   </div>
 
-  <div id="overallAnalyzeView">
+  <!-- 2. SUPER ADMIN RENTAL DASHBOARD -->
+  <div id="adminRentalView" style="display:none;">
+    <div class="card">
+      <h2>
+        <span>👑 Super Admin - Rental &amp; Client Manager</span>
+        <button class="btn secondary backPosBtn" style="width:auto;margin-top:0;padding:6px 14px;font-size:12px;">← Back to Terminal</button>
+      </h2>
+      <p class="small">Master control for <strong>dharunlogeshmdu@gmail.com</strong>. View all tenants using this rental POS system, their activity stats, and real-time login audit history.</p>
+      
+      <div class="analyticsGrid">
+        <div class="statCard">
+          <div class="lbl">Total Rental Clients</div>
+          <div class="val" id="adminTotalUsers">0</div>
+        </div>
+        <div class="statCard">
+          <div class="lbl">Total Tenant Bills</div>
+          <div class="val" id="adminTotalBills">0</div>
+        </div>
+        <div class="statCard">
+          <div class="lbl">System Logins</div>
+          <div class="val" id="adminTotalLogins">0</div>
+        </div>
+      </div>
+
+      <h3>Registered Rental Tenants</h3>
+      <div style="overflow-x:auto;margin-bottom:24px;">
+        <table class="historyTable">
+          <thead>
+            <tr>
+              <th>Logo</th>
+              <th>Hotel / Client Name</th>
+              <th>Owner</th>
+              <th>Email ID (Login)</th>
+              <th>Bills Created</th>
+              <th>Total Revenue</th>
+              <th>Registered On</th>
+            </tr>
+          </thead>
+          <tbody id="adminTenantsTableBody"></tbody>
+        </table>
+      </div>
+
+      <h3>Live Login Activity &amp; Audit Logs</h3>
+      <div style="overflow-x:auto;">
+        <table class="historyTable">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Hotel / Brand</th>
+              <th>Email ID</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="adminLoginsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. OVERALL ANALYTICS VIEW -->
+  <div id="overallAnalyzeView" style="display:none;">
     <div class="hubLayout">
       <div class="navHubSidebar">
         <div class="navHubHeader">
-          <div class="hubLogoBadge" id="hubLogoBadge">SB</div>
+          <div class="hubLogoBadge" id="hubLogoBadge">POS</div>
           <div class="hubBrandTitles">
             <h3 id="hubResortName">Sunrise POS</h3>
             <span>Analytics Hub</span>
@@ -686,58 +817,31 @@
         <div class="navHubSectionTitle">Navigation Hub</div>
         <div class="navHubMenu">
           <div class="navHubItem active" data-hubtab="tab-kpi">
-            <div class="leftSide">
-              <span class="hubIcon">⚡</span>
-              <span>Overview</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">⚡</span><span>Overview</span></div>
             <span class="hubBadge" id="hubBadgeBills">0</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-calendar">
-            <div class="leftSide">
-              <span class="hubIcon">🗓</span>
-              <span>Calendar</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">🗓</span><span>Calendar</span></div>
             <span class="hubBadge">Profit</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-rush">
-            <div class="leftSide">
-              <span class="hubIcon">⏰</span>
-              <span>Rush-Hour</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">⏰</span><span>Rush-Hour</span></div>
             <span class="hubBadge">24H</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-matrix">
-            <div class="leftSide">
-              <span class="hubIcon">⭐</span>
-              <span>Menu Matrix</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">⭐</span><span>Menu Matrix</span></div>
             <span class="hubBadge">AI</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-customers">
-            <div class="leftSide">
-              <span class="hubIcon">👥</span>
-              <span>Customers</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">👥</span><span>Customers</span></div>
             <span class="hubBadge" id="hubBadgeCust">0</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-inventory">
-            <div class="leftSide">
-              <span class="hubIcon">📦</span>
-              <span>Burn Rate</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">📦</span><span>Burn Rate</span></div>
             <span class="hubBadge">Stock</span>
           </div>
-
           <div class="navHubItem" data-hubtab="tab-demand">
-            <div class="leftSide">
-              <span class="hubIcon">🔥</span>
-              <span>Demand Insights</span>
-            </div>
+            <div class="leftSide"><span class="hubIcon">🔥</span><span>Demand Insights</span></div>
             <span class="hubBadge" id="hubBadgeMissed">0</span>
           </div>
         </div>
@@ -752,16 +856,9 @@
       <div class="hubContentArea">
         <div class="card" style="padding:12px 14px;margin-bottom:12px;">
           <div class="filters" style="margin-bottom:0;">
-            <div>
-              <label>Target Date</label>
-              <input id="oaDateFilter" type="date">
-            </div>
-            <div style="flex:0 0 auto;">
-              <button class="btn secondary" id="oaSetToday" style="margin-top:0;width:auto;padding:8px 12px;">Today</button>
-            </div>
-            <div style="flex:0 0 auto;">
-              <button class="btn secondary" id="oaSetAllTime" style="margin-top:0;width:auto;padding:8px 12px;">All Time</button>
-            </div>
+            <div><label>Target Date</label><input id="oaDateFilter" type="date"></div>
+            <div style="flex:0 0 auto;"><button class="btn secondary" id="oaSetToday" style="margin-top:0;width:auto;padding:8px 12px;">Today</button></div>
+            <div style="flex:0 0 auto;"><button class="btn secondary" id="oaSetAllTime" style="margin-top:0;width:auto;padding:8px 12px;">All Time</button></div>
           </div>
         </div>
 
@@ -769,22 +866,10 @@
           <div class="card">
             <h2>⚡ Business Performance</h2>
             <div class="analyticsGrid">
-              <div class="statCard">
-                <div class="lbl">Period Revenue</div>
-                <div class="val" id="oaTotalRevenue">₹0.00</div>
-              </div>
-              <div class="statCard">
-                <div class="lbl">Net Profit (Est.)</div>
-                <div class="val" id="oaPeriodProfit" style="color:#10B981;">₹0.00</div>
-              </div>
-              <div class="statCard">
-                <div class="lbl">Month Revenue</div>
-                <div class="val" id="oaMonthRevenue">₹0.00</div>
-              </div>
-              <div class="statCard">
-                <div class="lbl">Month Profit (Est.)</div>
-                <div class="val" id="oaMonthProfit">₹0.00</div>
-              </div>
+              <div class="statCard"><div class="lbl">Period Revenue</div><div class="val" id="oaTotalRevenue">₹0.00</div></div>
+              <div class="statCard"><div class="lbl">Net Profit (Est.)</div><div class="val" id="oaPeriodProfit" style="color:#10B981;">₹0.00</div></div>
+              <div class="statCard"><div class="lbl">Month Revenue</div><div class="val" id="oaMonthRevenue">₹0.00</div></div>
+              <div class="statCard"><div class="lbl">Month Profit (Est.)</div><div class="val" id="oaMonthProfit">₹0.00</div></div>
             </div>
 
             <h3>🎯 Sales Target</h3>
@@ -818,13 +903,7 @@
                 <button class="calNavBtn" id="calNextMonth">Next →</button>
               </div>
               <div class="calGrid">
-                <div class="calDayHeader">S</div>
-                <div class="calDayHeader">M</div>
-                <div class="calDayHeader">T</div>
-                <div class="calDayHeader">W</div>
-                <div class="calDayHeader">T</div>
-                <div class="calDayHeader">F</div>
-                <div class="calDayHeader">S</div>
+                <div class="calDayHeader">S</div><div class="calDayHeader">M</div><div class="calDayHeader">T</div><div class="calDayHeader">W</div><div class="calDayHeader">T</div><div class="calDayHeader">F</div><div class="calDayHeader">S</div>
               </div>
               <div class="calGrid" id="calDaysGrid" style="margin-top:4px;"></div>
             </div>
@@ -836,13 +915,7 @@
             <h2>⏰ Rush-Hour Heatmap</h2>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Slot</th>
-                    <th>Orders</th>
-                    <th>Revenue</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Slot</th><th>Orders</th><th>Revenue</th></tr></thead>
                 <tbody id="oaHourlyBody"></tbody>
               </table>
             </div>
@@ -854,42 +927,19 @@
             <h2>⭐ Menu Matrix</h2>
             <div style="overflow-x:auto;margin-bottom:14px;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Tier</th>
-                    <th>Items</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Tier</th><th>Items</th></tr></thead>
                 <tbody>
-                  <tr>
-                    <td><span class="badge" style="background:#E8DAEF;color:var(--star);">STARS</span></td>
-                    <td id="bmStars">—</td>
-                  </tr>
-                  <tr>
-                    <td><span class="badge" style="background:#D4E6F1;color:var(--plow);">PLOWHORSES</span></td>
-                    <td id="bmPlows">—</td>
-                  </tr>
-                  <tr>
-                    <td><span class="badge" style="background:#EDBB99;color:var(--puzzle);">PUZZLES</span></td>
-                    <td id="bmPuzzles">—</td>
-                  </tr>
-                  <tr>
-                    <td><span class="badge" style="background:#EAEDED;color:var(--dog);">DOGS</span></td>
-                    <td id="bmDogs">—</td>
-                  </tr>
+                  <tr><td><span class="badge" style="background:#E8DAEF;color:var(--star);">STARS</span></td><td id="bmStars">—</td></tr>
+                  <tr><td><span class="badge" style="background:#D4E6F1;color:var(--plow);">PLOWHORSES</span></td><td id="bmPlows">—</td></tr>
+                  <tr><td><span class="badge" style="background:#EDBB99;color:var(--puzzle);">PUZZLES</span></td><td id="bmPuzzles">—</td></tr>
+                  <tr><td><span class="badge" style="background:#EAEDED;color:var(--dog);">DOGS</span></td><td id="bmDogs">—</td></tr>
                 </tbody>
               </table>
             </div>
-
             <h2>🤝 Top Combo Pairings</h2>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Pair</th>
-                    <th>Orders</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Pair</th><th>Orders</th></tr></thead>
                 <tbody id="oaCombosBody"></tbody>
               </table>
             </div>
@@ -901,13 +951,7 @@
             <h2>👥 Repeat Customers</h2>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Phone</th>
-                    <th>Visits</th>
-                    <th>Spend</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Phone</th><th>Visits</th><th>Spend</th></tr></thead>
                 <tbody id="oaLoyaltyBody"></tbody>
               </table>
             </div>
@@ -919,12 +963,7 @@
             <h2>📦 Ingredient Burn</h2>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Staple</th>
-                    <th>Estimated Depletion</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Staple</th><th>Estimated Depletion</th></tr></thead>
                 <tbody id="oaBurnBody"></tbody>
               </table>
             </div>
@@ -937,81 +976,44 @@
               <span>🔥 Missed Demand — Sold Out, But Asked For</span>
               <button class="linkbtn danger" id="clearDemandLogBtn">Clear Log</button>
             </h2>
-            <p class="small" style="margin-top:-6px;">Every time a customer taps an item marked <strong>Sold Out</strong>, it's logged here — this is real demand you're missing out on. Restock these first.</p>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Times Asked</th>
-                    <th>Last Asked</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Item</th><th>Times Asked</th><th>Last Asked</th></tr></thead>
                 <tbody id="oaMissedDemandBody"></tbody>
               </table>
             </div>
           </div>
-
           <div class="card">
-            <h2>📉 Unsold Items — Selected Period</h2>
-            <p class="small" style="margin-top:-6px;">Items on your menu that sold <strong>zero units</strong> in the period chosen above. Consider a combo, discount, or pulling them from the menu.</p>
+            <h2>📉 Unsold Items</h2>
             <div style="overflow-x:auto;">
               <table class="historyTable">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock Status</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Stock Status</th></tr></thead>
                 <tbody id="oaUnsoldBody"></tbody>
               </table>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <div id="itemAnalyzeView">
+  <!-- 4. ITEM ANALYZE VIEW -->
+  <div id="itemAnalyzeView" style="display:none;">
     <div class="card">
       <h2>
         <span id="analyzeTitle">Item Analysis</span>
         <button class="btn secondary backPosBtn" style="width:auto;margin-top:0;padding:5px 10px;font-size:11.5px;">← Back to Billing</button>
       </h2>
       <div class="analyticsGrid">
-        <div class="statCard">
-          <div class="lbl">Units Sold</div>
-          <div class="val" id="anTotalUnits">0</div>
-        </div>
-        <div class="statCard">
-          <div class="lbl">Total Revenue</div>
-          <div class="val" id="anTotalRevenue">₹0.00</div>
-        </div>
-        <div class="statCard">
-          <div class="lbl">Orders Count</div>
-          <div class="val" id="anTotalOrders">0</div>
-        </div>
-        <div class="statCard">
-          <div class="lbl">Revenue Share</div>
-          <div class="val" id="anShareRevenue">0%</div>
-        </div>
+        <div class="statCard"><div class="lbl">Units Sold</div><div class="val" id="anTotalUnits">0</div></div>
+        <div class="statCard"><div class="lbl">Total Revenue</div><div class="val" id="anTotalRevenue">₹0.00</div></div>
+        <div class="statCard"><div class="lbl">Orders Count</div><div class="val" id="anTotalOrders">0</div></div>
+        <div class="statCard"><div class="lbl">Revenue Share</div><div class="val" id="anShareRevenue">0%</div></div>
       </div>
-
       <h3>Order History &amp; Breakdown</h3>
       <div style="overflow-x:auto;">
         <table class="historyTable">
-          <thead>
-            <tr>
-              <th>Date &amp; Time</th>
-              <th>Customer</th>
-              <th>Qty</th>
-              <th>Total</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Date &amp; Time</th><th>Customer</th><th>Qty</th><th>Total</th><th>Status</th></tr></thead>
           <tbody id="anHistoryBody"></tbody>
         </table>
       </div>
@@ -1021,6 +1023,7 @@
   <div class="small" id="statusLine">Ready.</div>
 </div>
 
+<!-- RECEIPT MODAL -->
 <div class="modalOverlay" id="modalOverlay">
   <div class="receiptCard">
     <div id="receiptArea"></div>
@@ -1032,10 +1035,15 @@
 </div>
 
 <script>
+const SUPER_ADMIN_EMAIL = "dharunlogeshmdu@gmail.com";
+let users = [];
+let loginAuditLogs = [];
+let currentUser = null;
+
 let bills = [];
 let demandLog = [];
 let menuItems = [];
-let settings = { resortName:"Sunrise Breakfast Billing", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light" };
+let settings = { resortName:"Sunrise Breakfast Billing", logoUrl:"", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light" };
 let cart = [];
 let currentCat = 'all';
 let calDate = new Date();
@@ -1045,6 +1053,18 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "Ju
 
 const $ = id => document.getElementById(id);
 const rupee = n => '₹'+n.toFixed(2);
+
+const DEFAULT_USERS = [
+  { 
+    name: "Dharun (Super Admin)", 
+    hotelName: "Dharun POS HQ", 
+    logoUrl: "", 
+    email: SUPER_ADMIN_EMAIL, 
+    password: "232323",
+    role: "admin",
+    registeredAt: "2026-08-30"
+  }
+];
 
 const DEFAULT_MENU = [
   {id:'m1', name:'Idli (2pc)', price:40, category:'Tiffin', inStock:true, image:''},
@@ -1073,14 +1093,29 @@ function getInitials(name){
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-function updateBrandDisplays(hotelName){
-  const name = hotelName || "Sunrise Breakfast Billing";
+function updateBrandDisplays(hotelName, logoUrl){
+  const name = hotelName || (currentUser ? currentUser.hotelName : "Sunrise Breakfast Billing");
   const inits = getInitials(name);
+  const logo = logoUrl || (currentUser ? currentUser.logoUrl : "");
   
   $('resortNameDisplay').textContent = name;
   $('hubResortName').textContent = name;
-  $('hotelLogoDisplay').textContent = inits;
-  $('hubLogoBadge').textContent = inits;
+  
+  const logoElements = [$('hotelLogoDisplay'), $('hubLogoBadge'), $('authLogoLogin'), $('authLogoReg')];
+  logoElements.forEach(el => {
+    if(!el) return;
+    if(logo){
+      el.innerHTML = `<img src="${logo}" alt="Logo" onerror="this.parentElement.textContent='${inits}'">`;
+    } else {
+      el.textContent = inits;
+    }
+  });
+}
+
+// ----------------- TENANT STORAGE ISOLATION -----------------
+function getUserStorageKey(key){
+  if(!currentUser) return key;
+  return `tenant_${currentUser.email.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${key}`;
 }
 
 async function storageGet(key){
@@ -1107,90 +1142,276 @@ async function storageSet(key, value){
   }
 }
 
-async function loadData(){
+// ----------------- AUTHENTICATION & MULTI-TENANCY -----------------
+async function loadMasterData(){
   try{
-    const b = await storageGet('bills');
+    const u = await storageGet('pos_master_users');
+    let loaded = u ? JSON.parse(u) : [];
+    
+    // Always guarantee Dharun admin account with updated password 232323
+    const adminIdx = loaded.findIndex(x => x.email.toLowerCase() === SUPER_ADMIN_EMAIL);
+    if(adminIdx !== -1){
+      loaded[adminIdx].password = "232323";
+      loaded[adminIdx].role = "admin";
+    } else {
+      loaded.unshift(DEFAULT_USERS[0]);
+    }
+    users = loaded;
+    await storageSet('pos_master_users', JSON.stringify(users));
+  }catch(e){
+    users = DEFAULT_USERS.slice();
+  }
+
+  try{
+    const logs = await storageGet('pos_master_login_logs');
+    loginAuditLogs = logs ? JSON.parse(logs) : [];
+  }catch(e){ loginAuditLogs = []; }
+}
+
+async function recordLoginAudit(user){
+  const newLog = {
+    timestamp: new Date().toLocaleString(),
+    hotelName: user.hotelName || user.name,
+    email: user.email,
+    role: user.role || 'Client'
+  };
+  loginAuditLogs.unshift(newLog);
+  if(loginAuditLogs.length > 200) loginAuditLogs.pop();
+  await storageSet('pos_master_login_logs', JSON.stringify(loginAuditLogs));
+}
+
+function initAuthUI(){
+  $('showRegisterLink').addEventListener('click', ()=>{
+    $('loginCard').style.display = 'none';
+    $('registerCard').style.display = 'block';
+    $('loginMsg').style.display = 'none';
+  });
+
+  $('showLoginLink').addEventListener('click', ()=>{
+    $('registerCard').style.display = 'none';
+    $('loginCard').style.display = 'block';
+    $('regMsg').style.display = 'none';
+  });
+
+  $('loginBtn').addEventListener('click', handleLogin);
+  $('loginPassword').addEventListener('keydown', e=>{ if(e.key === 'Enter') handleLogin(); });
+
+  $('registerBtn').addEventListener('click', handleRegister);
+  $('regPassword').addEventListener('keydown', e=>{ if(e.key === 'Enter') handleRegister(); });
+
+  $('logoutBtn').addEventListener('click', ()=>{
+    sessionStorage.removeItem('pos_logged_user');
+    currentUser = null;
+    showAuthOverlay();
+  });
+
+  $('openAdminHubBtn').addEventListener('click', renderSuperAdminDashboard);
+}
+
+function showAuthOverlay(){
+  $('authOverlay').style.display = 'flex';
+  $('loginCard').style.display = 'block';
+  $('registerCard').style.display = 'none';
+  $('loginPassword').value = '';
+}
+
+async function handleLogin(){
+  const email = $('loginEmail').value.trim().toLowerCase();
+  const password = $('loginPassword').value;
+  const msg = $('loginMsg');
+
+  if(!email || !password){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Enter both Email ID and Password.';
+    return;
+  }
+
+  const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+  if(user){
+    currentUser = user;
+    sessionStorage.setItem('pos_logged_user', JSON.stringify(user));
+    await recordLoginAudit(user);
+    msg.className = 'authMsg success';
+    msg.textContent = `Welcome back, ${user.hotelName || user.name}!`;
+    setTimeout(async ()=>{
+      $('authOverlay').style.display = 'none';
+      await loadTenantData();
+    }, 400);
+  } else {
+    msg.className = 'authMsg error';
+    msg.textContent = 'Invalid Email or Password.';
+  }
+}
+
+async function handleRegister(){
+  const hotelName = $('regHotelName').value.trim();
+  const name = $('regOwnerName').value.trim();
+  const logoUrl = $('regLogoUrl').value.trim();
+  const email = $('regEmail').value.trim().toLowerCase();
+  const password = $('regPassword').value;
+  const msg = $('regMsg');
+
+  if(!hotelName || !name || !email || !password){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Please fill out all required fields.';
+    return;
+  }
+
+  if(password.length < 6){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Password must be at least 6 characters.';
+    return;
+  }
+
+  if(users.some(u => u.email.toLowerCase() === email)){
+    msg.className = 'authMsg error';
+    msg.textContent = 'An account with this Email ID already exists.';
+    return;
+  }
+
+  const newUser = {
+    hotelName,
+    name,
+    logoUrl,
+    email,
+    password,
+    role: "client",
+    registeredAt: todayStr()
+  };
+
+  users.push(newUser);
+  await storageSet('pos_master_users', JSON.stringify(users));
+
+  currentUser = newUser;
+  sessionStorage.setItem('pos_logged_user', JSON.stringify(newUser));
+  await recordLoginAudit(newUser);
+
+  msg.className = 'authMsg success';
+  msg.textContent = 'Account created successfully!';
+  setTimeout(async ()=>{
+    $('authOverlay').style.display = 'none';
+    await loadTenantData();
+  }, 400);
+}
+
+// ----------------- SUPER ADMIN DASHBOARD LOGIC -----------------
+async function renderSuperAdminDashboard(){
+  showView('adminRentalView');
+  $('adminTotalUsers').textContent = users.length;
+  $('adminTotalLogins').textContent = loginAuditLogs.length;
+
+  // Calculate global metrics across tenants
+  let grandBillsCount = 0;
+  const tableRows = [];
+
+  for(const u of users){
+    const tenantKey = `tenant_${u.email.toLowerCase().replace(/[^a-z0-9]/g, '_')}_bills`;
+    const bRaw = await storageGet(tenantKey);
+    const tenantBills = bRaw ? JSON.parse(bRaw) : [];
+    const tenantRev = tenantBills.reduce((acc, b) => acc + (b.total || 0), 0);
+    grandBillsCount += tenantBills.length;
+
+    tableRows.push(`
+      <tr>
+        <td>
+          <div class="hotelCrestBadge" style="width:32px;height:32px;font-size:11px;min-width:32px;">
+            ${u.logoUrl ? `<img src="${u.logoUrl}" onerror="this.parentElement.textContent='${getInitials(u.hotelName)}'">` : getInitials(u.hotelName)}
+          </div>
+        </td>
+        <td><strong>${u.hotelName}</strong> ${u.email === SUPER_ADMIN_EMAIL ? '<span class="badge admin-badge">SUPER ADMIN</span>' : '<span class="badge paid">RENTAL CLIENT</span>'}</td>
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td><strong>${tenantBills.length}</strong></td>
+        <td>${rupee(tenantRev)}</td>
+        <td>${u.registeredAt || '—'}</td>
+      </tr>
+    `);
+  }
+
+  $('adminTotalBills').textContent = grandBillsCount;
+  $('adminTenantsTableBody').innerHTML = tableRows.join('');
+
+  $('adminLoginsTableBody').innerHTML = loginAuditLogs.map(l => `
+    <tr>
+      <td>${l.timestamp}</td>
+      <td><strong>${l.hotelName}</strong></td>
+      <td>${l.email}</td>
+      <td><span class="badge ${l.email === SUPER_ADMIN_EMAIL ? 'admin-badge' : 'paid'}">${l.role}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ----------------- LOAD SPECIFIC TENANT POS DATA -----------------
+async function loadTenantData(){
+  if(!currentUser) return;
+
+  // Toggle Admin Hub button
+  $('openAdminHubBtn').style.display = (currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL) ? 'flex' : 'none';
+  $('currentUserGreeting').textContent = `Hotel: ${currentUser.hotelName || currentUser.name} (${currentUser.email})`;
+
+  const bKey = getUserStorageKey('bills');
+  const mKey = getUserStorageKey('menuItems');
+  const sKey = getUserStorageKey('settings');
+  const dKey = getUserStorageKey('demandLog');
+
+  try{
+    const b = await storageGet(bKey);
     bills = b ? JSON.parse(b) : [];
   }catch(e){ bills = []; }
 
   try{
-    const m = await storageGet('menuItems');
+    const m = await storageGet(mKey);
     menuItems = (m && JSON.parse(m).length > 0) ? JSON.parse(m) : DEFAULT_MENU.slice();
-    menuItems.forEach(i => {
-      if(i.inStock === undefined) i.inStock = true;
-      if(!i.category) i.category = 'General';
-    });
-  }catch(e){ 
-    menuItems = DEFAULT_MENU.slice(); 
-  }
+  }catch(e){ menuItems = DEFAULT_MENU.slice(); }
 
   try{
-    const s = await storageGet('settings');
-    if(s) settings = JSON.parse(s);
+    const s = await storageGet(sKey);
+    settings = s ? JSON.parse(s) : {
+      resortName: currentUser.hotelName || "My Restaurant",
+      logoUrl: currentUser.logoUrl || "",
+      taxPct: 0,
+      defaultStaff: currentUser.name || "Cashier",
+      dailyTarget: 15000,
+      costMarginPct: 40,
+      theme: "light"
+    };
   }catch(e){ /* defaults */ }
 
   try{
-    const dl = await storageGet('demandLog');
+    const dl = await storageGet(dKey);
     demandLog = dl ? JSON.parse(dl) : [];
   }catch(e){ demandLog = []; }
 
-  $('setResortName').value = settings.resortName || "";
+  $('setResortName').value = settings.resortName || currentUser.hotelName || "";
+  $('setLogoUrl').value = settings.logoUrl || currentUser.logoUrl || "";
   $('setTaxPct').value = settings.taxPct || "";
-  $('setDefaultStaff').value = settings.defaultStaff || "";
+  $('setDefaultStaff').value = settings.defaultStaff || currentUser.name || "";
   $('setDailyTarget').value = settings.dailyTarget || 15000;
   $('setCostMarginPct').value = settings.costMarginPct || 40;
   
   $('taxPct').value = settings.taxPct || 0;
-  $('staffName').value = settings.defaultStaff || "";
+  $('staffName').value = settings.defaultStaff || currentUser.name || "";
 
-  updateBrandDisplays(settings.resortName);
-  $('statusLine').textContent = "Ready.";
-
+  updateBrandDisplays(settings.resortName, settings.logoUrl);
   applyTheme(settings.theme || 'light');
 
-  initChips();
-  initHubTabs();
-  initCartItemSearch();
-  initMobileCartToggle();
   renderMenu();
   renderManageList();
   renderCart();
   renderList();
   updateStats();
+  showView('posView');
 }
 
-function initMobileCartToggle(){
-  $('cartMobileToggle').addEventListener('click', ()=>{
-    $('cartCardContainer').classList.toggle('open');
-  });
-}
-
-function applyTheme(theme){
-  settings.theme = theme;
-  if(theme === 'dark'){
-    document.body.classList.add('dark-mode');
-    $('themeToggleBtn').innerHTML = '☀️ Light Mode';
-  } else {
-    document.body.classList.remove('dark-mode');
-    $('themeToggleBtn').innerHTML = '🌙 Dark Mode';
-  }
-}
-
-$('themeToggleBtn').addEventListener('click', async ()=>{
-  const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-  applyTheme(nextTheme);
-  await saveSettings();
-});
-
-async function saveBills(){ try{ await storageSet('bills', JSON.stringify(bills));}catch(e){console.error(e);} }
-async function saveDemandLog(){ try{ await storageSet('demandLog', JSON.stringify(demandLog));}catch(e){console.error(e);} }
-async function saveMenu(){ try{ await storageSet('menuItems', JSON.stringify(menuItems));}catch(e){console.error(e);} }
-async function saveSettings(){ try{ await storageSet('settings', JSON.stringify(settings));}catch(e){console.error(e);} }
+async function saveBills(){ try{ await storageSet(getUserStorageKey('bills'), JSON.stringify(bills));}catch(e){console.error(e);} }
+async function saveDemandLog(){ try{ await storageSet(getUserStorageKey('demandLog'), JSON.stringify(demandLog));}catch(e){console.error(e);} }
+async function saveMenu(){ try{ await storageSet(getUserStorageKey('menuItems'), JSON.stringify(menuItems));}catch(e){console.error(e);} }
+async function saveSettings(){ try{ await storageSet(getUserStorageKey('settings'), JSON.stringify(settings));}catch(e){console.error(e);} }
 
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 
 function showView(viewId){
-  ['posView', 'itemAnalyzeView', 'overallAnalyzeView'].forEach(id => {
+  ['posView', 'itemAnalyzeView', 'overallAnalyzeView', 'adminRentalView'].forEach(id => {
     $(id).style.display = (id === viewId) ? 'block' : 'none';
   });
 }
@@ -1668,18 +1889,9 @@ function renderOverallAnalytics(){
   });
 
   $('oaBurnBody').innerHTML = `
-    <tr>
-      <td><strong>Milk</strong></td>
-      <td><strong>${milkLiters.toFixed(1)} Liters</strong></td>
-    </tr>
-    <tr>
-      <td><strong>Tea/Coffee Powder</strong></td>
-      <td><strong>${(coffeeTeaGrams / 1000).toFixed(2)} Kg</strong></td>
-    </tr>
-    <tr>
-      <td><strong>Batter</strong></td>
-      <td><strong>${batterKg.toFixed(1)} Kg</strong></td>
-    </tr>
+    <tr><td><strong>Milk</strong></td><td><strong>${milkLiters.toFixed(1)} Liters</strong></td></tr>
+    <tr><td><strong>Tea/Coffee Powder</strong></td><td><strong>${(coffeeTeaGrams / 1000).toFixed(2)} Kg</strong></td></tr>
+    <tr><td><strong>Batter</strong></td><td><strong>${batterKg.toFixed(1)} Kg</strong></td></tr>
   `;
 
   renderCalendar();
@@ -1699,7 +1911,7 @@ function renderOverallAnalytics(){
   $('hubBadgeMissed').textContent = filteredDemand.length;
 
   if(sortedMissed.length === 0){
-    $('oaMissedDemandBody').innerHTML = '<tr><td colspan="3" class="empty">No missed-demand requests logged for this period. 🎉</td></tr>';
+    $('oaMissedDemandBody').innerHTML = '<tr><td colspan="3" class="empty">No missed-demand requests logged.</td></tr>';
   } else {
     $('oaMissedDemandBody').innerHTML = sortedMissed.map(([name, d]) => `
       <tr>
@@ -1712,7 +1924,7 @@ function renderOverallAnalytics(){
 
   const unsoldItems = menuItems.filter(item => !itemCounts[item.name]);
   if(unsoldItems.length === 0){
-    $('oaUnsoldBody').innerHTML = '<tr><td colspan="4" class="empty">Every menu item sold at least once in this period. 👏</td></tr>';
+    $('oaUnsoldBody').innerHTML = '<tr><td colspan="4" class="empty">Every menu item sold at least once.</td></tr>';
   } else {
     $('oaUnsoldBody').innerHTML = unsoldItems.map(item => `
       <tr>
@@ -1799,7 +2011,7 @@ $('openZReportBtn').addEventListener('click', ()=>{
 
   $('receiptArea').innerHTML = `
     <div class="rHeader">
-      <div class="rn">${settings.resortName || 'Breakfast Billing'}</div>
+      <div class="rn">${settings.resortName || 'Hotel POS'}</div>
       <div class="rMeta">${today}</div>
     </div>
     <hr>
@@ -1844,7 +2056,7 @@ function resetBillInputs(){
   $('custName').value = '';
   $('custPhone').value = '';
   $('discountPct').value = 0;
-  $('staffName').value = settings.defaultStaff || '';
+  $('staffName').value = (currentUser && currentUser.name) ? currentUser.name : (settings.defaultStaff || '');
   $('taxPct').value = settings.taxPct || 0;
   $('cartItemSearch').value = '';
   
@@ -1961,14 +2173,26 @@ $('toggleSettings').addEventListener('click', ()=>{
   p.style.display = p.style.display==='none' ? 'block' : 'none';
 });
 $('saveSettingsBtn').addEventListener('click', async ()=>{
-  settings.resortName = $('setResortName').value || "Breakfast Billing";
+  settings.resortName = $('setResortName').value || "Hotel POS";
+  settings.logoUrl = $('setLogoUrl').value.trim();
   settings.taxPct = parseFloat($('setTaxPct').value)||0;
   settings.defaultStaff = $('setDefaultStaff').value.trim();
   settings.dailyTarget = parseFloat($('setDailyTarget').value) || 15000;
   settings.costMarginPct = parseFloat($('setCostMarginPct').value) || 40;
   await saveSettings();
 
-  updateBrandDisplays(settings.resortName);
+  // Update current user cache
+  currentUser.hotelName = settings.resortName;
+  currentUser.logoUrl = settings.logoUrl;
+  const userIdx = users.findIndex(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+  if(userIdx !== -1){
+    users[userIdx].hotelName = settings.resortName;
+    users[userIdx].logoUrl = settings.logoUrl;
+    await storageSet('pos_master_users', JSON.stringify(users));
+  }
+  sessionStorage.setItem('pos_logged_user', JSON.stringify(currentUser));
+
+  updateBrandDisplays(settings.resortName, settings.logoUrl);
   $('taxPct').value = settings.taxPct;
   $('staffName').value = settings.defaultStaff;
   
@@ -2025,7 +2249,7 @@ function showReceipt(bill){
 
   $('receiptArea').innerHTML = `
     <div class="rHeader">
-      <div class="rn">${settings.resortName||'Breakfast Billing'}</div>
+      <div class="rn">${settings.resortName || 'Hotel POS'}</div>
       <div class="rMeta">${bill.date} · ${bill.time}</div>
       ${bill.name ? `<div class="rMeta">Cust: ${bill.name}${bill.phone? ' ('+bill.phone+')':''}</div>` : ''}
     </div>
@@ -2134,6 +2358,23 @@ function updateStats(){
   $('statPending').textContent = '₹'+pending.toFixed(0);
 }
 
+function applyTheme(theme){
+  settings.theme = theme;
+  if(theme === 'dark'){
+    document.body.classList.add('dark-mode');
+    $('themeToggleBtn').innerHTML = '🟢 Emerald Theme';
+  } else {
+    document.body.classList.remove('dark-mode');
+    $('themeToggleBtn').innerHTML = '🔵 Ocean Theme';
+  }
+}
+
+$('themeToggleBtn').addEventListener('click', async ()=>{
+  const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+  applyTheme(nextTheme);
+  await saveSettings();
+});
+
 ['filterDate','filterStatus'].forEach(id=>{
   $(id).addEventListener('input', renderList);
   $(id).addEventListener('change', renderList);
@@ -2145,7 +2386,7 @@ $('clearFilters').addEventListener('click', ()=>{
 
 $('clearDemandLogBtn').addEventListener('click', async ()=>{
   if(demandLog.length === 0) return;
-  if(confirm('Clear all logged "sold out but asked for" requests? This cannot be undone.')){
+  if(confirm('Clear all demand requests?')){
     demandLog = [];
     await saveDemandLog();
     renderOverallAnalytics();
@@ -2165,12 +2406,40 @@ $('exportBtn').addEventListener('click', ()=>{
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'breakfast_bills_'+todayStr()+'.csv';
+  a.href = url; a.download = `${(settings.resortName || 'hotel').replace(/\s+/g,'_')}_bills_${todayStr()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 });
 
-loadData();
+function initMobileCartToggle(){
+  $('cartMobileToggle').addEventListener('click', ()=>{
+    $('cartCardContainer').classList.toggle('open');
+  });
+}
+
+async function startApp(){
+  await loadMasterData();
+  initAuthUI();
+  initChips();
+  initHubTabs();
+  initCartItemSearch();
+  initMobileCartToggle();
+
+  const saved = sessionStorage.getItem('pos_logged_user');
+  if(saved){
+    try{
+      currentUser = JSON.parse(saved);
+      $('authOverlay').style.display = 'none';
+      await loadTenantData();
+    }catch(e){
+      showAuthOverlay();
+    }
+  } else {
+    showAuthOverlay();
+  }
+}
+
+startApp();
 </script>
 </body>
 </html>
