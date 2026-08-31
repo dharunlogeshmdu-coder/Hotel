@@ -6,6 +6,7 @@
 <title>Hotel & Breakfast POS Multi-Tenant System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Outfit:wght@700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
   :root{
     --bg:#0A0F1D;
@@ -59,8 +60,8 @@
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-  html{scroll-behavior:smooth;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter', sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s ease, color .25s ease;}
+  html{scroll-behavior:smooth;overflow-x:hidden;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter', sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s ease, color .25s ease;overflow-x:hidden;width:100%;}
   h1,h2,h3,h4,.brandText h1,.card h2,.hubBrandTitles h3{font-family:'Plus Jakarta Sans', sans-serif !important;letter-spacing:-0.02em;}
   ::selection{background:var(--teal);color:#fff;}
   ::-webkit-scrollbar{width:8px;height:8px;}
@@ -71,7 +72,8 @@
   /* Auth Overlay & Form Styling */
   #authOverlay {
     position: fixed; inset: 0; background: linear-gradient(135deg, #060913 0%, #0A0F1D 45%, #0D2B26 100%);
-    z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
+    z-index: 9999; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
   }
   .authCard {
     background: var(--panel); border-radius: 20px; padding: 32px 28px; width: 100%; max-width: 440px;
@@ -86,7 +88,49 @@
   .authSwitchRow { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
   .authSwitchRow a { color: var(--teal); font-weight: 800; cursor: pointer; text-decoration: underline; }
 
-  .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 110px;}
+  /* Subscription plan cards */
+  .planGrid{display:flex;flex-direction:column;gap:9px;text-align:left;}
+  .planCard{
+    border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;
+    background:var(--bg);transition:all .15s ease;
+  }
+  .planCard:hover{border-color:var(--teal);}
+  .planCard.active{border-color:var(--teal);background:var(--teal-light);box-shadow:0 0 0 1px var(--teal);}
+  .planCardTop{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .planName{font-weight:800;font-size:13px;color:var(--ink);}
+  .planNote{font-size:9.5px;font-weight:800;color:var(--teal);background:var(--teal-light);padding:2px 8px;border-radius:10px;text-transform:uppercase;}
+  .planPrice{font-family:'IBM Plex Mono', monospace;font-size:19px;font-weight:800;color:var(--teal);margin-top:4px;}
+  .planPerDay{font-size:10.5px;color:var(--muted);font-weight:600;}
+
+  #registerPlansWrap{margin:14px 0 4px;}
+  #registerPlansWrap .small{margin-bottom:8px;text-align:left;}
+  .trialNoticeBox{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;margin:14px 0 4px;
+    background:var(--teal-light);border:1px solid var(--teal);border-radius:12px;padding:12px 13px;
+  }
+  .trialNoticeIcon{font-size:20px;line-height:1;}
+  .trialNoticeBox strong{font-size:12.5px;color:var(--ink);display:block;margin-bottom:2px;}
+  .trialNoticeBox p{margin:0;font-size:11px;color:var(--muted);font-weight:600;line-height:1.4;}
+
+  .otpRow{display:flex;gap:8px;margin-bottom:12px;}
+  .otpRow input{margin-bottom:0;flex:1 1 auto;min-width:0;width:auto;}
+  .otpRow .otpBtn{flex:0 0 auto !important;width:auto !important;margin-top:0;padding:0 14px;font-size:11.5px;white-space:nowrap;}
+  #otpStatusMsg.pending{color:var(--amber);}
+  #otpStatusMsg.verified{color:#10B981;}
+  #otpStatusMsg.error{color:var(--coral);}
+
+  #subLockOverlay{
+    position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(6,9,19,0.92);backdrop-filter:blur(10px);overflow-y:auto;
+  }
+  #subLockOverlay.show{display:flex;}
+  .paywallCard{
+    background:var(--panel);border:2px solid var(--coral);border-radius:20px;padding:28px 24px;width:100%;max-width:440px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.6);text-align:center;margin:auto;
+  }
+  .paywallBadge{background:var(--coral);color:#fff;font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;display:inline-block;margin-bottom:10px;}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 110px;width:100%;min-width:0;overflow-x:hidden;}
 
   .topbar{
     display:flex;flex-direction:column;gap:20px;padding:32px 26px 26px;border-radius:22px;
@@ -143,6 +187,8 @@
     .hotelCrestBadge{width:52px;height:52px;min-width:52px;font-size:17px;}
     .topbar{padding:24px 18px 20px;border-radius:18px;}
     .wrap{padding:14px 12px 116px;}
+    #authOverlay{padding:20px 14px;}
+    .authCard{padding:24px 18px;}
   }
   .stat-pill{
     background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.14);
@@ -383,11 +429,6 @@
   .small{font-size:11px;color:var(--muted);margin-top:6px;font-weight:600;}
 
   .hubLayout{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start;}
-  @media (max-width:960px){
-    .hubLayout{grid-template-columns:1fr;}
-    .navHubMenu{display:flex !important;flex-direction:row !important;overflow-x:auto !important;gap:6px !important;padding-bottom:4px;}
-    .navHubItem{white-space:nowrap;padding:9px 13px !important;font-size:12px !important;}
-  }
 
   .navHubSidebar{
     background:var(--nav-dark-bg);border-radius:16px;padding:18px 15px;color:#FFFFFF;
@@ -424,6 +465,56 @@
   .statCard:hover{transform:translateY(-2px);}
   .statCard .val{font-family:'IBM Plex Mono', monospace;font-size:18px;font-weight:800;color:var(--teal);margin-top:4px;}
   .statCard .lbl{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800;}
+
+  /* --- Analytics Hub: compact mobile layout --- */
+  @media (max-width:960px){
+    .hubLayout{grid-template-columns:1fr;gap:12px;width:100%;min-width:0;}
+    .navHubSidebar{
+      position:sticky;top:0;z-index:20;padding:10px 10px 8px;border-radius:14px;
+      box-shadow:0 10px 24px rgba(3,7,18,0.35);
+      min-width:0;width:100%;max-width:100%;
+    }
+    .navHubHeader{margin-bottom:9px;padding-bottom:9px;gap:8px;}
+    .hubLogoBadge{width:28px;height:28px;font-size:11px;flex-shrink:0;}
+    .hubBrandTitles{min-width:0;}
+    .hubBrandTitles h3{font-size:12px;}
+    .hubBrandTitles span{font-size:8.5px;}
+    .navHubSectionTitle{display:none;}
+    .navHubMenu{
+      display:flex !important;flex-direction:row !important;overflow-x:auto !important;
+      overflow-y:hidden;gap:6px !important;padding-bottom:2px;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;
+      min-width:0;max-width:100%;
+      -webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+      mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+    }
+    .navHubMenu::-webkit-scrollbar{display:none;}
+    .navHubItem{
+      white-space:nowrap;padding:8px 12px !important;font-size:11.5px !important;
+      flex:0 0 auto;border-radius:20px;
+    }
+    .navHubItem .leftSide{gap:5px;}
+    .navHubItem .hubBadge{font-size:9px;padding:1px 6px;}
+    .hubBackWrap{margin-top:9px;padding-top:9px;}
+    .backPosBtn{font-size:11px;padding:7px;}
+    .hubContentArea{width:100%;min-width:0;max-width:100%;}
+    .hubContentArea .card{padding:14px 12px;width:100%;min-width:0;max-width:100%;}
+    .hubContentArea .card h2{font-size:14px;}
+    .hubContentArea .card h3{font-size:13px;}
+    .analyticsGrid{grid-template-columns:repeat(2,1fr);gap:8px;}
+    .statCard{padding:10px;min-width:0;}
+    .statCard .val{font-size:15px;word-break:break-word;}
+    .statCard .lbl{font-size:9px;}
+    .filters{flex-direction:column;align-items:stretch;}
+    .filters > div{width:100%;min-width:0;}
+    .filters #oaSetToday, .filters #oaSetAllTime{width:100%;}
+  }
+  @media (max-width:420px){
+    .statCard .val{font-size:13.5px;}
+    .navHubItem{padding:7px 10px !important;font-size:11px !important;}
+  }
+  /* --- end Analytics Hub mobile --- */
+
   .historyTable{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;color:var(--ink);}
   .historyTable th, .historyTable td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--line);}
   .historyTable th{background:var(--bg);color:var(--ink);font-size:10.5px;text-transform:uppercase;font-weight:800;}
@@ -552,8 +643,29 @@
     <input type="text" id="regOwnerName" placeholder="Owner / Manager Name">
     <input type="text" id="regLogoUrl" placeholder="Logo Image URL (Optional)">
     <input type="email" id="regEmail" placeholder="Login Email ID">
+    <input type="email" id="regEmailConfirm" placeholder="Confirm Email ID">
+
+    <div class="otpRow">
+      <input type="tel" id="regMobile" placeholder="Mobile Number (10 digits)" maxlength="10" inputmode="numeric">
+      <button type="button" class="btn secondary otpBtn" id="sendOtpBtn">Send OTP</button>
+    </div>
+    <div class="otpRow" id="otpVerifyRow" style="display:none;">
+      <input type="text" id="regOtp" placeholder="Enter 4-digit OTP" maxlength="4" inputmode="numeric">
+      <button type="button" class="btn secondary otpBtn" id="verifyOtpBtn">Verify</button>
+    </div>
+    <div class="small" id="otpStatusMsg" style="text-align:left;margin:-6px 0 12px;font-weight:700;"></div>
+
+    <input type="tel" id="regMobileConfirm" placeholder="Confirm Mobile Number" maxlength="10" inputmode="numeric">
+
     <input type="password" id="regPassword" placeholder="Create Password (min 6 chars)">
-    <button class="btn" id="registerBtn" style="margin-top:6px;">Register &amp; Launch POS</button>
+    <div class="trialNoticeBox">
+      <span class="trialNoticeIcon">🎁</span>
+      <div>
+        <strong>3-Day Free Trial</strong>
+        <p>Full access, no card required. Add a subscription plan any time from the dashboard.</p>
+      </div>
+    </div>
+    <button class="btn" id="registerBtn" style="margin-top:6px;">Start Free 3-Day Trial</button>
     <div class="authSwitchRow">
       Already have a rental ID? <a id="showLoginLink">Back to Login</a>
     </div>
@@ -568,6 +680,7 @@
         <h1 id="resortNameDisplay">Sunrise Breakfast Billing</h1>
         <div class="userGreeting" id="currentUserGreeting">Logged in as: Staff</div>
         <span class="brand-glow-tag">Multi-Tenant POS</span>
+        <span class="brand-glow-tag" id="renewalCountdownTag" style="display:none;margin-left:6px;">Renews in — days</span>
       </div>
     </div>
 
@@ -747,10 +860,10 @@
   <div id="adminRentalView" style="display:none;">
     <div class="card">
       <h2>
-        <span>👑 Super Admin - Rental &amp; Client Manager</span>
+        <span>👑 Super Admin - Subscription &amp; Client Manager</span>
         <button class="btn secondary backPosBtn" style="width:auto;margin-top:0;padding:6px 14px;font-size:12px;">← Back to Terminal</button>
       </h2>
-      <p class="small">Master control for <strong>dharunlogeshmdu@gmail.com</strong>. View all tenants using this rental POS system, their activity stats, and real-time login audit history.</p>
+      <p class="small">Master control for <strong>dharunlogeshmdu@gmail.com</strong>. Manage tenant subscriptions, renewals and payment confirmations.</p>
       
       <div class="analyticsGrid">
         <div class="statCard">
@@ -758,13 +871,29 @@
           <div class="val" id="adminTotalUsers">0</div>
         </div>
         <div class="statCard">
-          <div class="lbl">Total Tenant Bills</div>
-          <div class="val" id="adminTotalBills">0</div>
+          <div class="lbl">Active Subscriptions</div>
+          <div class="val" id="adminActiveSubs">0</div>
+        </div>
+        <div class="statCard">
+          <div class="lbl">Pending Confirmations</div>
+          <div class="val" id="adminPendingConfirm">0</div>
         </div>
         <div class="statCard">
           <div class="lbl">System Logins</div>
           <div class="val" id="adminTotalLogins">0</div>
         </div>
+      </div>
+
+      <h3>💵 Global Subscription Pricing</h3>
+      <div class="card" style="background:var(--bg);margin-bottom:24px;">
+        <p class="small" style="margin-top:0;">Update plan prices here — changes apply instantly to new signups, renewals and the payment paywall for every tenant.</p>
+        <div class="mmRow" style="grid-template-columns:1fr 1fr 1fr;">
+          <div><label>1 Month (₹)</label><input id="planPrice1m" type="number" min="0"></div>
+          <div><label>3 Months (₹)</label><input id="planPrice3m" type="number" min="0"></div>
+          <div><label>12 Months (₹)</label><input id="planPrice12m" type="number" min="0"></div>
+        </div>
+        <button class="btn secondary" id="savePlanPricingBtn" style="margin-top:10px;width:auto;padding:10px 18px;">💾 Save Pricing</button>
+        <span class="small" id="planPricingSavedMsg" style="display:none;color:#10B981;font-weight:800;margin-left:10px;">✓ Saved</span>
       </div>
 
       <h3>Registered Rental Tenants</h3>
@@ -773,15 +902,32 @@
           <thead>
             <tr>
               <th>Logo</th>
-              <th>Hotel / Client Name</th>
-              <th>Owner</th>
-              <th>Email ID (Login)</th>
-              <th>Bills Created</th>
-              <th>Total Revenue</th>
-              <th>Registered On</th>
+              <th>Hotel / Client</th>
+              <th>Mobile</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Renewal Date (Editable)</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="adminTenantsTableBody"></tbody>
+        </table>
+      </div>
+
+      <h3>💰 Payment Notifications</h3>
+      <div style="overflow-x:auto;margin-bottom:24px;">
+        <table class="historyTable">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Hotel / Client</th>
+              <th>Amount</th>
+              <th>Plan</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="adminNotifTableBody"></tbody>
         </table>
       </div>
 
@@ -798,6 +944,40 @@
           </thead>
           <tbody id="adminLoginsTableBody"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTION PAYWALL OVERLAY -->
+  <div id="subLockOverlay">
+    <div class="paywallCard">
+      <span class="paywallBadge">Subscription</span>
+      <div class="hotelCrestBadge" style="margin:0 auto 12px;" id="subLockLogo">POS</div>
+      <h2 id="subLockHotelName">Your Hotel</h2>
+      <h3 id="subLockTitle" style="margin:2px 0 4px;font-size:15px;color:var(--teal);">Activate Your Subscription</h3>
+      <p id="subLockDesc" class="small" style="margin-bottom:14px;">Choose a plan below and complete payment to start using the POS.</p>
+      <div class="planGrid" id="subLockPlans"></div>
+      <button class="btn" style="margin-top:16px;" onclick="payWithRazorpaySubscription()">💳 Pay with Razorpay</button>
+      <button class="btn secondary" onclick="notifyAdminManualPayment()">📲 I've Paid via UPI — Notify Admin</button>
+      <div class="authSwitchRow"><a id="subLockLogoutLink">Log out</a></div>
+    </div>
+  </div>
+
+  <!-- PAYMENT STATEMENT MODAL -->
+  <div class="modalOverlay" id="statementModal">
+    <div class="receiptCard" style="width:100%;max-width:460px;background:var(--panel);color:var(--ink);border:1px solid var(--line);">
+      <div style="padding:16px 18px;">
+        <h3 style="margin:0 0 2px;font-size:15px;">📄 Payment Statement</h3>
+        <p class="small" id="statementHotelName" style="margin:0 0 12px;"></p>
+        <div style="overflow-x:auto;">
+          <table class="historyTable">
+            <thead><tr><th>Date</th><th>Plan</th><th>Amount</th><th>Method</th></tr></thead>
+            <tbody id="statementBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modalActions">
+        <button class="closeB" onclick="closeStatementModal()">Close</button>
       </div>
     </div>
   </div>
@@ -846,7 +1026,7 @@
           </div>
         </div>
 
-        <div style="margin-top:16px;border-top:1px solid var(--nav-border);padding-top:12px;">
+        <div class="hubBackWrap" style="margin-top:16px;border-top:1px solid var(--nav-border);padding-top:12px;">
           <button class="btn secondary backPosBtn" style="color:#00E5AA;border-color:#00D09C;font-size:12px;padding:8px;width:100%;font-weight:800;">
             ← Return to Billing
           </button>
@@ -1038,6 +1218,7 @@
 const SUPER_ADMIN_EMAIL = "dharunlogeshmdu@gmail.com";
 let users = [];
 let loginAuditLogs = [];
+let paymentNotifications = [];
 let currentUser = null;
 
 let bills = [];
@@ -1051,6 +1232,30 @@ let calDate = new Date();
 const COMMON_MODIFIERS = ['No Sugar', 'Less Sugar', 'Strong', 'Extra Sambar', 'No Onion', 'Spicy', 'Parcel'];
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+// ----------------- SUBSCRIPTION PLANS -----------------
+const RAZORPAY_KEY_ID = "rzp_live_TUPuy45h1NrJg4";
+let SUBSCRIPTION_PLANS = [
+  { key:'1m',  label:'1 Month',   days:30,  price:999  },
+  { key:'3m',  label:'3 Months',  days:90,  price:2699, note:'10% OFF' },
+  { key:'12m', label:'12 Months', days:365, price:9999, note:'17% OFF · Best Value' }
+];
+
+function addDaysToDate(dateStr, days){
+  const base = dateStr ? new Date(dateStr) : new Date();
+  base.setDate(base.getDate() + days);
+  return base.toISOString().slice(0,10);
+}
+function isSubscriptionActive(user){
+  if(!user) return false;
+  if(user.email === SUPER_ADMIN_EMAIL) return true;
+  return (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trial') && !!user.renewalDate && user.renewalDate >= todayStr();
+}
+function daysLeftFor(user){
+  if(!user || !user.renewalDate) return 0;
+  const diff = Math.ceil((new Date(user.renewalDate) - new Date(todayStr())) / 86400000);
+  return diff;
+}
+
 const $ = id => document.getElementById(id);
 const rupee = n => '₹'+n.toFixed(2);
 
@@ -1062,7 +1267,11 @@ const DEFAULT_USERS = [
     email: SUPER_ADMIN_EMAIL, 
     password: "232323",
     role: "admin",
-    registeredAt: "2026-08-30"
+    registeredAt: "2026-08-30",
+    subscriptionStatus: "active",
+    subscriptionPlan: "Admin (Unlimited)",
+    renewalDate: "2099-12-31",
+    paymentHistory: []
   }
 ];
 
@@ -1101,7 +1310,7 @@ function updateBrandDisplays(hotelName, logoUrl){
   $('resortNameDisplay').textContent = name;
   $('hubResortName').textContent = name;
   
-  const logoElements = [$('hotelLogoDisplay'), $('hubLogoBadge'), $('authLogoLogin'), $('authLogoReg')];
+  const logoElements = [$('hotelLogoDisplay'), $('hubLogoBadge'), $('authLogoLogin'), $('authLogoReg'), $('subLockLogo')];
   logoElements.forEach(el => {
     if(!el) return;
     if(logo){
@@ -1142,6 +1351,35 @@ async function storageSet(key, value){
   }
 }
 
+async function storageDelete(key){
+  if(window.storage && window.storage.delete){
+    try{
+      await window.storage.delete(key, true);
+    }catch(e){
+      localStorage.removeItem(key);
+    }
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+async function loadPlanSettings(){
+  try{
+    const raw = await storageGet('pos_master_plan_settings');
+    if(raw){
+      const saved = JSON.parse(raw);
+      SUBSCRIPTION_PLANS = SUBSCRIPTION_PLANS.map(p => saved[p.key] ? {...p, price: Number(saved[p.key])} : p);
+    }
+  }catch(e){ /* keep defaults */ }
+}
+
+async function savePlanSettings(newPrices){
+  SUBSCRIPTION_PLANS = SUBSCRIPTION_PLANS.map(p => newPrices[p.key] ? {...p, price: Number(newPrices[p.key])} : p);
+  const toSave = {};
+  SUBSCRIPTION_PLANS.forEach(p => toSave[p.key] = p.price);
+  await storageSet('pos_master_plan_settings', JSON.stringify(toSave));
+}
+
 // ----------------- AUTHENTICATION & MULTI-TENANCY -----------------
 async function loadMasterData(){
   try{
@@ -1153,9 +1391,19 @@ async function loadMasterData(){
     if(adminIdx !== -1){
       loaded[adminIdx].password = "232323";
       loaded[adminIdx].role = "admin";
+      loaded[adminIdx].subscriptionStatus = "active";
+      loaded[adminIdx].renewalDate = "2099-12-31";
+      if(!loaded[adminIdx].paymentHistory) loaded[adminIdx].paymentHistory = [];
     } else {
       loaded.unshift(DEFAULT_USERS[0]);
     }
+    // Backfill subscription fields for any tenant created before this feature existed
+    loaded.forEach(u => {
+      if(u.subscriptionStatus === undefined) u.subscriptionStatus = 'inactive';
+      if(u.renewalDate === undefined) u.renewalDate = null;
+      if(u.subscriptionPlan === undefined) u.subscriptionPlan = null;
+      if(!u.paymentHistory) u.paymentHistory = [];
+    });
     users = loaded;
     await storageSet('pos_master_users', JSON.stringify(users));
   }catch(e){
@@ -1166,6 +1414,15 @@ async function loadMasterData(){
     const logs = await storageGet('pos_master_login_logs');
     loginAuditLogs = logs ? JSON.parse(logs) : [];
   }catch(e){ loginAuditLogs = []; }
+
+  try{
+    const notifs = await storageGet('pos_master_payment_notifications');
+    paymentNotifications = notifs ? JSON.parse(notifs) : [];
+  }catch(e){ paymentNotifications = []; }
+}
+
+async function savePaymentNotifications(){
+  await storageSet('pos_master_payment_notifications', JSON.stringify(paymentNotifications));
 }
 
 async function recordLoginAudit(user){
@@ -1180,11 +1437,244 @@ async function recordLoginAudit(user){
   await storageSet('pos_master_login_logs', JSON.stringify(loginAuditLogs));
 }
 
+// ----------------- SUBSCRIPTION / PAYWALL LOGIC -----------------
+let selectedPlanKey = '1m';
+
+function renderPlanCards(containerId, interactive){
+  const el = $(containerId);
+  if(!el) return;
+  el.innerHTML = SUBSCRIPTION_PLANS.map(p => `
+    <div class="planCard ${interactive && p.key === selectedPlanKey ? 'active' : ''}" ${interactive ? `onclick="selectPlan('${p.key}', '${containerId}')"` : ''}>
+      <div class="planCardTop">
+        <span class="planName">${p.label}</span>
+        ${p.note ? `<span class="planNote">${p.note}</span>` : ''}
+      </div>
+      <div class="planPrice">₹${p.price}</div>
+      <div class="planPerDay">≈ ₹${Math.round(p.price / p.days)}/day</div>
+    </div>
+  `).join('');
+}
+
+function selectPlan(key, containerId){
+  selectedPlanKey = key;
+  renderPlanCards(containerId, true);
+}
+
+function showSubLockOverlay(user){
+  currentUser = user;
+  $('subLockHotelName').textContent = user.hotelName || user.name;
+  $('subLockLogo').textContent = getInitials(user.hotelName || user.name);
+  const active = isSubscriptionActive(user);
+  const wasTrial = user.subscriptionStatus === 'trial';
+  $('subLockTitle').textContent = wasTrial
+    ? 'Your Free Trial Has Ended'
+    : (user.subscriptionStatus === undefined || !user.renewalDate
+        ? 'Activate Your Subscription'
+        : 'Subscription Renewal Required');
+  $('subLockDesc').textContent = wasTrial
+    ? `Your 3-day free trial ended on ${user.renewalDate}. Choose a plan below to keep using the POS.`
+    : (user.renewalDate
+        ? `Your plan expired on ${user.renewalDate}. Choose a plan below to restore access.`
+        : 'Choose a plan below and complete payment to start using the POS.');
+  renderPlanCards('subLockPlans', true);
+  $('subLockOverlay').classList.add('show');
+}
+function hideSubLockOverlay(){
+  $('subLockOverlay').classList.remove('show');
+}
+
+async function applySubscriptionPayment(planKey, method){
+  const plan = SUBSCRIPTION_PLANS.find(p => p.key === planKey) || SUBSCRIPTION_PLANS[0];
+  const baseDate = (currentUser.renewalDate && currentUser.renewalDate >= todayStr()) ? currentUser.renewalDate : todayStr();
+  currentUser.subscriptionStatus = 'active';
+  currentUser.subscriptionPlan = plan.label;
+  currentUser.renewalDate = addDaysToDate(baseDate, plan.days);
+  const paymentId = `PAY-${Date.now()}`;
+  if(!currentUser.paymentHistory) currentUser.paymentHistory = [];
+  currentUser.paymentHistory.unshift({
+    id: paymentId, date: new Date().toLocaleString(), amount: plan.price, plan: plan.label, method
+  });
+
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx !== -1) users[idx] = currentUser;
+  await storageSet('pos_master_users', JSON.stringify(users));
+  sessionStorage.setItem('pos_logged_user', JSON.stringify(currentUser));
+
+  paymentNotifications.unshift({
+    id: paymentId, timestamp: new Date().toLocaleString(), hotelName: currentUser.hotelName || currentUser.name,
+    email: currentUser.email, amount: plan.price, plan: plan.label, method, status: method === 'Razorpay' ? 'confirmed' : 'confirmed'
+  });
+  await savePaymentNotifications();
+}
+
+window.payWithRazorpaySubscription = function(){
+  const plan = SUBSCRIPTION_PLANS.find(p => p.key === selectedPlanKey) || SUBSCRIPTION_PLANS[0];
+  if(typeof Razorpay === 'undefined'){
+    alert('Razorpay checkout could not load. Check your internet connection, or use "Notify Admin" below.');
+    return;
+  }
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: plan.price * 100,
+    currency: "INR",
+    name: currentUser.hotelName || "Hotel POS Subscription",
+    description: `Subscription - ${plan.label}`,
+    handler: async function(response){
+      await applySubscriptionPayment(plan.key, 'Razorpay');
+      hideSubLockOverlay();
+      alert(`🎉 Payment successful! Transaction ID: ${response.razorpay_payment_id}\nYour subscription is active until ${currentUser.renewalDate}.`);
+      await loadTenantData();
+    },
+    theme: { color: "#06D6A0" }
+  };
+  try{
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function(response){
+      alert('❌ Payment Failed: ' + (response.error && response.error.description || 'Transaction declined.'));
+    });
+    rzp.open();
+  }catch(e){
+    alert('Could not initialize Razorpay checkout. Please check the RAZORPAY_KEY_ID configuration.');
+  }
+};
+
+window.notifyAdminManualPayment = async function(){
+  const plan = SUBSCRIPTION_PLANS.find(p => p.key === selectedPlanKey) || SUBSCRIPTION_PLANS[0];
+  const ref = prompt(`Enter your UPI / bank transaction reference for the ${plan.label} plan (₹${plan.price}):`);
+  if(!ref) return;
+  const notifId = `PAY-${Date.now()}`;
+  paymentNotifications.unshift({
+    id: notifId, timestamp: new Date().toLocaleString(), hotelName: currentUser.hotelName || currentUser.name,
+    email: currentUser.email, amount: plan.price, plan: plan.label, method: `UPI Ref: ${ref}`, status: 'pending', planKey: plan.key
+  });
+  await savePaymentNotifications();
+  alert('📲 Payment notification sent to admin. Your access will be activated once confirmed.');
+};
+
+// ---- Admin-side subscription management ----
+async function adminConfirmNotification(notifId){
+  const n = paymentNotifications.find(x => x.id === notifId);
+  if(!n || n.status === 'confirmed') return;
+  const tenant = users.find(u => u.email === n.email);
+  if(!tenant){ alert('Tenant account not found.'); return; }
+  const plan = SUBSCRIPTION_PLANS.find(p => p.label === n.plan) || SUBSCRIPTION_PLANS[0];
+  const baseDate = (tenant.renewalDate && tenant.renewalDate >= todayStr()) ? tenant.renewalDate : todayStr();
+  tenant.subscriptionStatus = 'active';
+  tenant.subscriptionPlan = plan.label;
+  tenant.renewalDate = addDaysToDate(baseDate, plan.days);
+  if(!tenant.paymentHistory) tenant.paymentHistory = [];
+  tenant.paymentHistory.unshift({ id:n.id, date:n.timestamp, amount:n.amount, plan:n.plan, method:n.method });
+  await storageSet('pos_master_users', JSON.stringify(users));
+  n.status = 'confirmed';
+  await savePaymentNotifications();
+  await renderSuperAdminDashboard();
+  alert(`✅ Confirmed. ${tenant.hotelName} is active until ${tenant.renewalDate}.`);
+}
+
+async function adminEditRenewalDate(email){
+  const tenant = users.find(u => u.email === email);
+  if(!tenant) return;
+  const input = prompt(`Set new renewal date for ${tenant.hotelName} (YYYY-MM-DD):`, tenant.renewalDate || todayStr());
+  if(!input) return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(input)){ alert('Please enter a valid date as YYYY-MM-DD.'); return; }
+  tenant.renewalDate = input;
+  tenant.subscriptionStatus = input >= todayStr() ? 'active' : tenant.subscriptionStatus;
+  await storageSet('pos_master_users', JSON.stringify(users));
+  await renderSuperAdminDashboard();
+}
+
+async function adminToggleSuspend(email){
+  const tenant = users.find(u => u.email === email);
+  if(!tenant) return;
+  tenant.subscriptionStatus = tenant.subscriptionStatus === 'suspended' ? (isSubscriptionActive(tenant) ? 'active' : 'inactive') : 'suspended';
+  await storageSet('pos_master_users', JSON.stringify(users));
+  await renderSuperAdminDashboard();
+}
+
+function sanitizeEmailForKey(email){
+  return email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+async function adminEditUserId(email){
+  const tenant = users.find(u => u.email === email);
+  if(!tenant) return;
+  const input = prompt(`Set new Owner / Manager name for ${tenant.hotelName}:`, tenant.name || '');
+  if(input === null) return;
+  const trimmed = input.trim();
+  if(!trimmed){ alert('Name cannot be empty.'); return; }
+  tenant.name = trimmed;
+  await storageSet('pos_master_users', JSON.stringify(users));
+  await renderSuperAdminDashboard();
+}
+
+async function adminEditUserEmail(oldEmail){
+  const tenant = users.find(u => u.email === oldEmail);
+  if(!tenant) return;
+  const input = prompt(`Set new Login Email ID for ${tenant.hotelName}:`, tenant.email);
+  if(input === null) return;
+  const newEmail = input.trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){ alert('Please enter a valid email address.'); return; }
+  if(newEmail === oldEmail.toLowerCase()) return;
+  if(users.some(u => u.email.toLowerCase() === newEmail)){ alert('Another account already uses this email.'); return; }
+  if(newEmail === SUPER_ADMIN_EMAIL){ alert('This email is reserved for the Super Admin account.'); return; }
+
+  // Migrate this tenant's isolated data (bills/menu/settings/demand log) to the new storage keys.
+  const oldPrefix = `tenant_${sanitizeEmailForKey(oldEmail)}_`;
+  const newPrefix = `tenant_${sanitizeEmailForKey(newEmail)}_`;
+  for(const suffix of ['bills','menuItems','settings','demandLog']){
+    const val = await storageGet(oldPrefix + suffix);
+    if(val !== null && val !== undefined){
+      await storageSet(newPrefix + suffix, val);
+      await storageDelete(oldPrefix + suffix);
+    }
+  }
+
+  tenant.email = newEmail;
+  await storageSet('pos_master_users', JSON.stringify(users));
+
+  // Keep an active session in sync if this admin happened to be editing their own logged-in account.
+  if(currentUser && currentUser.email === oldEmail){
+    currentUser = tenant;
+    sessionStorage.setItem('pos_logged_user', JSON.stringify(currentUser));
+  }
+  await renderSuperAdminDashboard();
+}
+
+async function adminDeleteUser(email){
+  const tenant = users.find(u => u.email === email);
+  if(!tenant) return;
+  if(email === SUPER_ADMIN_EMAIL){ alert('The Super Admin account cannot be deleted.'); return; }
+  const confirmed = confirm(`Delete ${tenant.hotelName} (${tenant.email}) permanently? This removes their login and all billing data. This cannot be undone.`);
+  if(!confirmed) return;
+
+  const prefix = `tenant_${sanitizeEmailForKey(email)}_`;
+  for(const suffix of ['bills','menuItems','settings','demandLog']){
+    await storageDelete(prefix + suffix);
+  }
+
+  users = users.filter(u => u.email !== email);
+  await storageSet('pos_master_users', JSON.stringify(users));
+  await renderSuperAdminDashboard();
+}
+
+function adminOpenStatement(email){
+  const tenant = users.find(u => u.email === email);
+  if(!tenant) return;
+  $('statementHotelName').textContent = tenant.hotelName || tenant.name;
+  const rows = (tenant.paymentHistory || []);
+  $('statementBody').innerHTML = rows.length ? rows.map(p => `
+    <tr><td>${p.date}</td><td>${p.plan}</td><td>${rupee(p.amount)}</td><td>${p.method}</td></tr>
+  `).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--muted);">No payments recorded yet.</td></tr>`;
+  $('statementModal').classList.add('show');
+}
+function closeStatementModal(){ $('statementModal').classList.remove('show'); }
+
 function initAuthUI(){
   $('showRegisterLink').addEventListener('click', ()=>{
     $('loginCard').style.display = 'none';
     $('registerCard').style.display = 'block';
     $('loginMsg').style.display = 'none';
+    resetOtpState();
   });
 
   $('showLoginLink').addEventListener('click', ()=>{
@@ -1199,6 +1689,12 @@ function initAuthUI(){
   $('registerBtn').addEventListener('click', handleRegister);
   $('regPassword').addEventListener('keydown', e=>{ if(e.key === 'Enter') handleRegister(); });
 
+  $('sendOtpBtn').addEventListener('click', sendRegistrationOtp);
+  $('verifyOtpBtn').addEventListener('click', verifyRegistrationOtp);
+  $('regMobile').addEventListener('input', ()=>{
+    if(regOtpVerified){ resetOtpState(); }
+  });
+
   $('logoutBtn').addEventListener('click', ()=>{
     sessionStorage.removeItem('pos_logged_user');
     currentUser = null;
@@ -1206,6 +1702,15 @@ function initAuthUI(){
   });
 
   $('openAdminHubBtn').addEventListener('click', renderSuperAdminDashboard);
+  $('savePlanPricingBtn').addEventListener('click', handleSavePlanPricing);
+
+  $('subLockLogoutLink').addEventListener('click', ()=>{
+    sessionStorage.removeItem('pos_logged_user');
+    currentUser = null;
+    hideSubLockOverlay();
+    showAuthOverlay();
+  });
+
 }
 
 function showAuthOverlay(){
@@ -1235,11 +1740,72 @@ async function handleLogin(){
     msg.textContent = `Welcome back, ${user.hotelName || user.name}!`;
     setTimeout(async ()=>{
       $('authOverlay').style.display = 'none';
-      await loadTenantData();
+      if(isSubscriptionActive(user)){
+        await loadTenantData();
+      } else {
+        showSubLockOverlay(user);
+      }
     }, 400);
   } else {
     msg.className = 'authMsg error';
     msg.textContent = 'Invalid Email or Password.';
+  }
+}
+
+// ----------------- MOBILE OTP VERIFICATION (REGISTRATION) -----------------
+// NOTE: This is a client-side demo OTP flow. A real production system must send the OTP
+// via a backend server calling an SMS gateway (e.g. MSG91, Twilio, Firebase Auth) — an OTP
+// can never be generated/verified safely from browser JS alone. Wire your backend endpoint
+// into sendRegistrationOtp() / verifyRegistrationOtp() when you're ready to go live.
+let regOtpCode = null;
+let regOtpMobile = null;
+let regOtpVerified = false;
+
+function resetOtpState(){
+  regOtpCode = null;
+  regOtpMobile = null;
+  regOtpVerified = false;
+  $('otpVerifyRow').style.display = 'none';
+  $('regOtp').value = '';
+  const statusEl = $('otpStatusMsg');
+  statusEl.className = 'small';
+  statusEl.textContent = '';
+}
+
+function sendRegistrationOtp(){
+  const mobile = $('regMobile').value.trim();
+  const statusEl = $('otpStatusMsg');
+  if(!/^[6-9]\d{9}$/.test(mobile)){
+    statusEl.className = 'small error';
+    statusEl.textContent = '⚠ Enter a valid 10-digit mobile number.';
+    return;
+  }
+  regOtpCode = String(Math.floor(1000 + Math.random() * 9000));
+  regOtpMobile = mobile;
+  regOtpVerified = false;
+  $('otpVerifyRow').style.display = 'flex';
+  $('regOtp').value = '';
+  statusEl.className = 'small pending';
+  // Demo mode: OTP is shown here since there's no SMS gateway wired up yet.
+  statusEl.textContent = `OTP sent to ${mobile}. (Demo mode — OTP: ${regOtpCode})`;
+}
+
+function verifyRegistrationOtp(){
+  const entered = $('regOtp').value.trim();
+  const statusEl = $('otpStatusMsg');
+  if(!regOtpCode || $('regMobile').value.trim() !== regOtpMobile){
+    statusEl.className = 'small error';
+    statusEl.textContent = '⚠ Send a fresh OTP for this number first.';
+    return;
+  }
+  if(entered === regOtpCode){
+    regOtpVerified = true;
+    statusEl.className = 'small verified';
+    statusEl.textContent = '✅ Mobile number verified.';
+  } else {
+    regOtpVerified = false;
+    statusEl.className = 'small error';
+    statusEl.textContent = '❌ Incorrect OTP. Please try again.';
   }
 }
 
@@ -1248,12 +1814,39 @@ async function handleRegister(){
   const name = $('regOwnerName').value.trim();
   const logoUrl = $('regLogoUrl').value.trim();
   const email = $('regEmail').value.trim().toLowerCase();
+  const emailConfirm = $('regEmailConfirm').value.trim().toLowerCase();
+  const mobile = $('regMobile').value.trim();
+  const mobileConfirm = $('regMobileConfirm').value.trim();
   const password = $('regPassword').value;
   const msg = $('regMsg');
 
-  if(!hotelName || !name || !email || !password){
+  if(!hotelName || !name || !email || !emailConfirm || !mobile || !mobileConfirm || !password){
     msg.className = 'authMsg error';
     msg.textContent = 'Please fill out all required fields.';
+    return;
+  }
+
+  if(email !== emailConfirm){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Email ID and Confirm Email ID do not match.';
+    return;
+  }
+
+  if(!/^[6-9]\d{9}$/.test(mobile)){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Enter a valid 10-digit mobile number.';
+    return;
+  }
+
+  if(mobile !== mobileConfirm){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Mobile Number and Confirm Mobile Number do not match.';
+    return;
+  }
+
+  if(!regOtpVerified || regOtpMobile !== mobile){
+    msg.className = 'authMsg error';
+    msg.textContent = 'Please verify your mobile number with the OTP before registering.';
     return;
   }
 
@@ -1269,14 +1862,25 @@ async function handleRegister(){
     return;
   }
 
+  if(users.some(u => u.mobile === mobile)){
+    msg.className = 'authMsg error';
+    msg.textContent = 'An account with this Mobile Number already exists.';
+    return;
+  }
+
   const newUser = {
     hotelName,
     name,
     logoUrl,
     email,
+    mobile,
     password,
     role: "client",
-    registeredAt: todayStr()
+    registeredAt: todayStr(),
+    subscriptionStatus: "trial",
+    subscriptionPlan: "3-Day Free Trial",
+    renewalDate: addDaysToDate(todayStr(), 3),
+    paymentHistory: []
   };
 
   users.push(newUser);
@@ -1287,7 +1891,8 @@ async function handleRegister(){
   await recordLoginAudit(newUser);
 
   msg.className = 'authMsg success';
-  msg.textContent = 'Account created successfully!';
+  msg.textContent = 'Account created! Your 3-day free trial has started.';
+  resetOtpState();
   setTimeout(async ()=>{
     $('authOverlay').style.display = 'none';
     await loadTenantData();
@@ -1295,41 +1900,89 @@ async function handleRegister(){
 }
 
 // ----------------- SUPER ADMIN DASHBOARD LOGIC -----------------
+async function handleSavePlanPricing(){
+  const p1 = Number($('planPrice1m').value);
+  const p3 = Number($('planPrice3m').value);
+  const p12 = Number($('planPrice12m').value);
+  if(!p1 || !p3 || !p12 || p1 < 0 || p3 < 0 || p12 < 0){
+    alert('Enter valid prices for all three plans.');
+    return;
+  }
+  await savePlanSettings({ '1m': p1, '3m': p3, '12m': p12 });
+  const savedMsg = $('planPricingSavedMsg');
+  savedMsg.style.display = 'inline';
+  setTimeout(()=>{ savedMsg.style.display = 'none'; }, 2200);
+}
+
 async function renderSuperAdminDashboard(){
   showView('adminRentalView');
   $('adminTotalUsers').textContent = users.length;
   $('adminTotalLogins').textContent = loginAuditLogs.length;
+  $('adminActiveSubs').textContent = users.filter(u => isSubscriptionActive(u)).length;
+  $('adminPendingConfirm').textContent = paymentNotifications.filter(n => n.status === 'pending').length;
 
-  // Calculate global metrics across tenants
-  let grandBillsCount = 0;
-  const tableRows = [];
+  const p1 = SUBSCRIPTION_PLANS.find(p => p.key === '1m');
+  const p3 = SUBSCRIPTION_PLANS.find(p => p.key === '3m');
+  const p12 = SUBSCRIPTION_PLANS.find(p => p.key === '12m');
+  if(p1) $('planPrice1m').value = p1.price;
+  if(p3) $('planPrice3m').value = p3.price;
+  if(p12) $('planPrice12m').value = p12.price;
 
-  for(const u of users){
-    const tenantKey = `tenant_${u.email.toLowerCase().replace(/[^a-z0-9]/g, '_')}_bills`;
-    const bRaw = await storageGet(tenantKey);
-    const tenantBills = bRaw ? JSON.parse(bRaw) : [];
-    const tenantRev = tenantBills.reduce((acc, b) => acc + (b.total || 0), 0);
-    grandBillsCount += tenantBills.length;
+  const tableRows = users.map(u => {
+    const isAdmin = u.email === SUPER_ADMIN_EMAIL;
+    const active = isSubscriptionActive(u);
+    const suspended = u.subscriptionStatus === 'suspended';
+    const dLeft = daysLeftFor(u);
+    let statusBadge;
+    if(isAdmin) statusBadge = '<span class="badge admin-badge">SUPER ADMIN</span>';
+    else if(suspended) statusBadge = '<span class="badge pending">SUSPENDED</span>';
+    else if(active) statusBadge = `<span class="badge paid">${u.subscriptionStatus==='trial' ? '🎁 TRIAL' : 'ACTIVE'} · ${dLeft}d left</span>`;
+    else if(u.renewalDate) statusBadge = u.subscriptionStatus === 'trial' ? '<span class="badge pending">TRIAL ENDED</span>' : '<span class="badge pending">EXPIRED</span>';
+    else statusBadge = '<span class="badge pending">NOT PAID</span>';
 
-    tableRows.push(`
+    const actions = isAdmin ? '<span class="small">—</span>' : `
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <button class="linkbtn" onclick="adminEditUserId('${u.email}')">✎ Edit Name</button>
+        <button class="linkbtn" onclick="adminEditUserEmail('${u.email}')">✎ Edit Email</button>
+        <button class="linkbtn" onclick="adminEditRenewalDate('${u.email}')">✎ Edit Date</button>
+        <button class="linkbtn" onclick="adminOpenStatement('${u.email}')">📄 Statement</button>
+        <button class="linkbtn ${suspended ? '' : 'danger'}" onclick="adminToggleSuspend('${u.email}')">${suspended ? '▶ Activate' : '⏸ Suspend'}</button>
+        <button class="linkbtn danger" onclick="adminDeleteUser('${u.email}')">🗑 Delete</button>
+      </div>`;
+
+    return `
       <tr>
         <td>
           <div class="hotelCrestBadge" style="width:32px;height:32px;font-size:11px;min-width:32px;">
             ${u.logoUrl ? `<img src="${u.logoUrl}" onerror="this.parentElement.textContent='${getInitials(u.hotelName)}'">` : getInitials(u.hotelName)}
           </div>
         </td>
-        <td><strong>${u.hotelName}</strong> ${u.email === SUPER_ADMIN_EMAIL ? '<span class="badge admin-badge">SUPER ADMIN</span>' : '<span class="badge paid">RENTAL CLIENT</span>'}</td>
-        <td>${u.name}</td>
-        <td>${u.email}</td>
-        <td><strong>${tenantBills.length}</strong></td>
-        <td>${rupee(tenantRev)}</td>
-        <td>${u.registeredAt || '—'}</td>
+        <td><strong>${u.hotelName}</strong><div class="small" style="margin-top:2px;">${u.name} · ${u.email}</div></td>
+        <td>${u.mobile || '—'}</td>
+        <td>${u.subscriptionPlan || '—'}</td>
+        <td>${statusBadge}</td>
+        <td>${u.renewalDate || '—'}</td>
+        <td>${actions}</td>
       </tr>
-    `);
-  }
+    `;
+  });
 
-  $('adminTotalBills').textContent = grandBillsCount;
   $('adminTenantsTableBody').innerHTML = tableRows.join('');
+
+  $('adminNotifTableBody').innerHTML = paymentNotifications.length ? paymentNotifications.map(n => `
+    <tr>
+      <td>${n.timestamp}</td>
+      <td><strong>${n.hotelName}</strong><div class="small">${n.email}</div></td>
+      <td>${rupee(n.amount)}</td>
+      <td>${n.plan}</td>
+      <td>${n.method}</td>
+      <td>
+        ${n.status === 'pending'
+          ? `<span class="badge pending">PENDING</span> <button class="linkbtn" onclick="adminConfirmNotification('${n.id}')">✅ Confirm &amp; Activate</button>`
+          : '<span class="badge paid">CONFIRMED</span>'}
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No payment notifications yet.</td></tr>`;
 
   $('adminLoginsTableBody').innerHTML = loginAuditLogs.map(l => `
     <tr>
@@ -1345,9 +1998,28 @@ async function renderSuperAdminDashboard(){
 async function loadTenantData(){
   if(!currentUser) return;
 
+  const isSuperAdmin = currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL;
   // Toggle Admin Hub button
-  $('openAdminHubBtn').style.display = (currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL) ? 'flex' : 'none';
+  $('openAdminHubBtn').style.display = isSuperAdmin ? 'flex' : 'none';
+  // Admin manages subscriptions only — no need for their own bill-analysis tools
+  $('openOverallBtn').style.display = isSuperAdmin ? 'none' : 'flex';
+  $('openZReportBtn').style.display = isSuperAdmin ? 'none' : 'flex';
   $('currentUserGreeting').textContent = `Hotel: ${currentUser.hotelName || currentUser.name} (${currentUser.email})`;
+
+  const renewalTag = $('renewalCountdownTag');
+  if(!isSuperAdmin && currentUser.renewalDate){
+    const dLeft = daysLeftFor(currentUser);
+    const isTrial = currentUser.subscriptionStatus === 'trial';
+    renewalTag.style.display = 'inline-flex';
+    renewalTag.textContent = dLeft > 0
+      ? `${isTrial ? '🎁 Trial' : '✅ Plan'} · ${dLeft} day${dLeft===1?'':'s'} left`
+      : `${isTrial ? 'Trial ended' : 'Plan expired'}`;
+    renewalTag.style.background = dLeft <= 1
+      ? 'rgba(239,68,68,0.18)'
+      : (dLeft <= 3 ? 'rgba(245,158,11,0.2)' : '');
+  } else {
+    renewalTag.style.display = 'none';
+  }
 
   const bKey = getUserStorageKey('bills');
   const mKey = getUserStorageKey('menuItems');
@@ -1400,7 +2072,11 @@ async function loadTenantData(){
   renderCart();
   renderList();
   updateStats();
-  showView('posView');
+  if(isSuperAdmin){
+    await renderSuperAdminDashboard();
+  } else {
+    showView('posView');
+  }
 }
 
 async function saveBills(){ try{ await storageSet(getUserStorageKey('bills'), JSON.stringify(bills));}catch(e){console.error(e);} }
@@ -2419,6 +3095,7 @@ function initMobileCartToggle(){
 
 async function startApp(){
   await loadMasterData();
+  await loadPlanSettings();
   initAuthUI();
   initChips();
   initHubTabs();
@@ -2429,8 +3106,15 @@ async function startApp(){
   if(saved){
     try{
       currentUser = JSON.parse(saved);
+      // Re-sync with the master record in case admin changed the subscription
+      const fresh = users.find(u => u.email === currentUser.email);
+      if(fresh) currentUser = fresh;
       $('authOverlay').style.display = 'none';
-      await loadTenantData();
+      if(isSubscriptionActive(currentUser)){
+        await loadTenantData();
+      } else {
+        showSubLockOverlay(currentUser);
+      }
     }catch(e){
       showAuthOverlay();
     }
