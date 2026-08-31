@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Outfit:wght@700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Cloud database SDK: lets data sync across every device/browser instead of staying on one phone/PC -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <style>
   :root{
     --bg:#0A0F1D;
@@ -625,7 +629,7 @@
     <h2>Billing Terminal Login</h2>
     <p>Sign in with your Email ID &amp; Password</p>
     <div class="authMsg" id="loginMsg"></div>
-    <input type="email" id="loginEmail" placeholder="Email Address (e.g. dharunlogeshmdu@gmail.com)" autocomplete="email" value="dharunlogeshmdu@gmail.com">
+    <input type="email" id="loginEmail" placeholder="Email Address" autocomplete="email">
     <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
     <button class="btn" id="loginBtn" style="margin-top:6px;">Sign In to Terminal</button>
     <div class="authSwitchRow">
@@ -654,6 +658,7 @@
       <button type="button" class="btn secondary otpBtn" id="verifyOtpBtn">Verify</button>
     </div>
     <div class="small" id="otpStatusMsg" style="text-align:left;margin:-6px 0 12px;font-weight:700;"></div>
+    <div id="recaptcha-container"></div>
 
     <input type="tel" id="regMobileConfirm" placeholder="Confirm Mobile Number" maxlength="10" inputmode="numeric">
 
@@ -878,10 +883,6 @@
           <div class="lbl">Pending Confirmations</div>
           <div class="val" id="adminPendingConfirm">0</div>
         </div>
-        <div class="statCard">
-          <div class="lbl">System Logins</div>
-          <div class="val" id="adminTotalLogins">0</div>
-        </div>
       </div>
 
       <h3>💵 Global Subscription Pricing</h3>
@@ -928,21 +929,6 @@
             </tr>
           </thead>
           <tbody id="adminNotifTableBody"></tbody>
-        </table>
-      </div>
-
-      <h3>Live Login Activity &amp; Audit Logs</h3>
-      <div style="overflow-x:auto;">
-        <table class="historyTable">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Hotel / Brand</th>
-              <th>Email ID</th>
-              <th>Role</th>
-            </tr>
-          </thead>
-          <tbody id="adminLoginsTableBody"></tbody>
         </table>
       </div>
     </div>
@@ -1217,7 +1203,6 @@
 <script>
 const SUPER_ADMIN_EMAIL = "dharunlogeshmdu@gmail.com";
 let users = [];
-let loginAuditLogs = [];
 let paymentNotifications = [];
 let currentUser = null;
 
@@ -1327,7 +1312,65 @@ function getUserStorageKey(key){
   return `tenant_${currentUser.email.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${key}`;
 }
 
+// ----------------- CLOUD STORAGE (FIREBASE / FIRESTORE) -----------------
+// This is what lets data (new rental accounts, bills, settings, etc.) show up for the
+// Admin/other logins on ANY device/browser instead of being stuck on the device that
+// created it. Without this, data was only saved to that one browser's local storage.
+//
+// SETUP (one-time, ~5 minutes, free — no credit card needed):
+//   1. Go to https://console.firebase.google.com and create a project.
+//   2. In the left menu: Build -> Firestore Database -> "Create database" -> Start in
+//      "test mode" -> pick any region -> Enable.
+//   3. Click the gear icon -> "Project settings" -> scroll to "Your apps" -> click the
+//      "</>" (Web) icon -> register the app (any nickname) -> it shows a firebaseConfig
+//      object. Copy it and paste the values into FIREBASE_CONFIG below.
+//   4. Re-upload/host this file. Cloud sync is now live for every device.
+// Until this is filled in, the app safely keeps working exactly as before (on-device only).
+//
+// REAL SMS OTP SETUP (uses Firebase Phone Authentication — Google sends the real SMS,
+// no separate SMS gateway account or secret key needed on your side):
+//   1. In the Firebase console: Build -> Authentication -> "Get started".
+//   2. Sign-in method tab -> enable "Phone".
+//   3. Settings tab -> "Authorized domains" -> add the domain you host this file on
+//      (e.g. yourname.github.io). Without this step OTP sending will fail.
+// Until this is done, OTP falls back to an on-screen demo code so registration still works.
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_YOUR_API_KEY_HERE",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+
+let db = null;
+let auth = null;
+let cloudReady = false;
+try{
+  if(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('PASTE_') !== 0){
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    cloudReady = true;
+  }
+}catch(e){
+  console.warn('Cloud storage not configured yet — running on this device only. See FIREBASE_CONFIG setup notes.', e);
+  cloudReady = false;
+}
+
+function sanitizeStorageKey(key){
+  return String(key).replace(/[\/.#$\[\]]/g, '_');
+}
+
 async function storageGet(key){
+  if(cloudReady){
+    try{
+      const snap = await db.collection('pos_cloud_data').doc(sanitizeStorageKey(key)).get();
+      return snap.exists ? (snap.data().value ?? null) : null;
+    }catch(e){
+      console.warn('Cloud read failed, falling back for', key, e);
+    }
+  }
   if(window.storage && window.storage.get){
     try{
       const res = await window.storage.get(key, true);
@@ -1340,27 +1383,44 @@ async function storageGet(key){
 }
 
 async function storageSet(key, value){
+  if(cloudReady){
+    try{
+      await db.collection('pos_cloud_data').doc(sanitizeStorageKey(key)).set({
+        value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      try{ localStorage.setItem(key, value); }catch(e){ /* offline mirror is best-effort */ }
+      return;
+    }catch(e){
+      console.warn('Cloud write failed, saving on this device only for', key, e);
+    }
+  }
   if(window.storage && window.storage.set){
     try{
       await window.storage.set(key, value, true);
-    }catch(e){
-      localStorage.setItem(key, value);
-    }
-  } else {
-    localStorage.setItem(key, value);
+      return;
+    }catch(e){ /* fall through to local */ }
   }
+  localStorage.setItem(key, value);
 }
 
 async function storageDelete(key){
+  if(cloudReady){
+    try{
+      await db.collection('pos_cloud_data').doc(sanitizeStorageKey(key)).delete();
+      localStorage.removeItem(key);
+      return;
+    }catch(e){
+      console.warn('Cloud delete failed for', key, e);
+    }
+  }
   if(window.storage && window.storage.delete){
     try{
       await window.storage.delete(key, true);
-    }catch(e){
-      localStorage.removeItem(key);
-    }
-  } else {
-    localStorage.removeItem(key);
+      return;
+    }catch(e){ /* fall through to local */ }
   }
+  localStorage.removeItem(key);
 }
 
 async function loadPlanSettings(){
@@ -1411,11 +1471,6 @@ async function loadMasterData(){
   }
 
   try{
-    const logs = await storageGet('pos_master_login_logs');
-    loginAuditLogs = logs ? JSON.parse(logs) : [];
-  }catch(e){ loginAuditLogs = []; }
-
-  try{
     const notifs = await storageGet('pos_master_payment_notifications');
     paymentNotifications = notifs ? JSON.parse(notifs) : [];
   }catch(e){ paymentNotifications = []; }
@@ -1423,18 +1478,6 @@ async function loadMasterData(){
 
 async function savePaymentNotifications(){
   await storageSet('pos_master_payment_notifications', JSON.stringify(paymentNotifications));
-}
-
-async function recordLoginAudit(user){
-  const newLog = {
-    timestamp: new Date().toLocaleString(),
-    hotelName: user.hotelName || user.name,
-    email: user.email,
-    role: user.role || 'Client'
-  };
-  loginAuditLogs.unshift(newLog);
-  if(loginAuditLogs.length > 200) loginAuditLogs.pop();
-  await storageSet('pos_master_login_logs', JSON.stringify(loginAuditLogs));
 }
 
 // ----------------- SUBSCRIPTION / PAYWALL LOGIC -----------------
@@ -1718,12 +1761,19 @@ function showAuthOverlay(){
   $('loginCard').style.display = 'block';
   $('registerCard').style.display = 'none';
   $('loginPassword').value = '';
+  // Pull the latest accounts from the cloud so a rental ID created on another device
+  // (or by the admin) is recognized here right away.
+  loadMasterData().catch(()=>{});
 }
 
 async function handleLogin(){
   const email = $('loginEmail').value.trim().toLowerCase();
   const password = $('loginPassword').value;
   const msg = $('loginMsg');
+
+  // Always re-sync with the cloud right before checking credentials, so a login/admin
+  // change made on a different device is respected immediately.
+  await loadMasterData();
 
   if(!email || !password){
     msg.className = 'authMsg error';
@@ -1735,7 +1785,6 @@ async function handleLogin(){
   if(user){
     currentUser = user;
     sessionStorage.setItem('pos_logged_user', JSON.stringify(user));
-    await recordLoginAudit(user);
     msg.className = 'authMsg success';
     msg.textContent = `Welcome back, ${user.hotelName || user.name}!`;
     setTimeout(async ()=>{
@@ -1753,18 +1802,20 @@ async function handleLogin(){
 }
 
 // ----------------- MOBILE OTP VERIFICATION (REGISTRATION) -----------------
-// NOTE: This is a client-side demo OTP flow. A real production system must send the OTP
-// via a backend server calling an SMS gateway (e.g. MSG91, Twilio, Firebase Auth) — an OTP
-// can never be generated/verified safely from browser JS alone. Wire your backend endpoint
-// into sendRegistrationOtp() / verifyRegistrationOtp() when you're ready to go live.
+// Sends a REAL SMS via Firebase Phone Authentication (see the setup notes above near
+// FIREBASE_CONFIG). If Phone Auth hasn't been set up yet, this automatically falls back
+// to an on-screen demo code so the registration form still works while you finish setup.
 let regOtpCode = null;
 let regOtpMobile = null;
 let regOtpVerified = false;
+let recaptchaVerifier = null;
+let otpConfirmationResult = null;
 
 function resetOtpState(){
   regOtpCode = null;
   regOtpMobile = null;
   regOtpVerified = false;
+  otpConfirmationResult = null;
   $('otpVerifyRow').style.display = 'none';
   $('regOtp').value = '';
   const statusEl = $('otpStatusMsg');
@@ -1772,7 +1823,15 @@ function resetOtpState(){
   statusEl.textContent = '';
 }
 
-function sendRegistrationOtp(){
+function getRecaptchaVerifier(){
+  if(recaptchaVerifier){
+    try{ recaptchaVerifier.clear(); }catch(e){ /* ignore */ }
+  }
+  recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' }, auth);
+  return recaptchaVerifier;
+}
+
+async function sendRegistrationOtp(){
   const mobile = $('regMobile').value.trim();
   const statusEl = $('otpStatusMsg');
   if(!/^[6-9]\d{9}$/.test(mobile)){
@@ -1780,19 +1839,53 @@ function sendRegistrationOtp(){
     statusEl.textContent = '⚠ Enter a valid 10-digit mobile number.';
     return;
   }
-  regOtpCode = String(Math.floor(1000 + Math.random() * 9000));
   regOtpMobile = mobile;
   regOtpVerified = false;
+  otpConfirmationResult = null;
   $('otpVerifyRow').style.display = 'flex';
   $('regOtp').value = '';
+
+  if(auth){
+    statusEl.className = 'small pending';
+    statusEl.textContent = `Sending OTP by SMS to +91 ${mobile}...`;
+    try{
+      const verifier = getRecaptchaVerifier();
+      otpConfirmationResult = await auth.signInWithPhoneNumber('+91' + mobile, verifier);
+      statusEl.className = 'small pending';
+      statusEl.textContent = `✅ OTP sent by SMS to +91 ${mobile}.`;
+      return;
+    }catch(e){
+      console.warn('Real SMS OTP failed — check Phone Auth setup (Sign-in method + Authorized domains).', e);
+      statusEl.className = 'small error';
+      statusEl.textContent = `⚠ Could not send SMS (${e && e.code ? e.code : 'error'}). Using a demo code instead so you can continue.`;
+    }
+  }
+
+  // Fallback demo mode: used only if Phone Auth isn't configured yet, or the send failed.
+  regOtpCode = String(Math.floor(1000 + Math.random() * 9000));
   statusEl.className = 'small pending';
-  // Demo mode: OTP is shown here since there's no SMS gateway wired up yet.
-  statusEl.textContent = `OTP sent to ${mobile}. (Demo mode — OTP: ${regOtpCode})`;
+  statusEl.textContent += ` (Demo OTP: ${regOtpCode})`;
 }
 
-function verifyRegistrationOtp(){
+async function verifyRegistrationOtp(){
   const entered = $('regOtp').value.trim();
   const statusEl = $('otpStatusMsg');
+
+  if(otpConfirmationResult){
+    try{
+      await otpConfirmationResult.confirm(entered);
+      regOtpVerified = true;
+      statusEl.className = 'small verified';
+      statusEl.textContent = '✅ Mobile number verified.';
+    }catch(e){
+      regOtpVerified = false;
+      statusEl.className = 'small error';
+      statusEl.textContent = '❌ Incorrect OTP. Please try again.';
+    }
+    return;
+  }
+
+  // Demo-mode fallback path (only reached when Phone Auth isn't configured/available).
   if(!regOtpCode || $('regMobile').value.trim() !== regOtpMobile){
     statusEl.className = 'small error';
     statusEl.textContent = '⚠ Send a fresh OTP for this number first.';
@@ -1888,7 +1981,6 @@ async function handleRegister(){
 
   currentUser = newUser;
   sessionStorage.setItem('pos_logged_user', JSON.stringify(newUser));
-  await recordLoginAudit(newUser);
 
   msg.className = 'authMsg success';
   msg.textContent = 'Account created! Your 3-day free trial has started.';
@@ -1915,9 +2007,11 @@ async function handleSavePlanPricing(){
 }
 
 async function renderSuperAdminDashboard(){
+  // Refresh from the cloud every time the hub opens (or an action re-renders it), so the
+  // Admin sees rental accounts/clients created from ANY device, not just this one.
+  await loadMasterData();
   showView('adminRentalView');
   $('adminTotalUsers').textContent = users.length;
-  $('adminTotalLogins').textContent = loginAuditLogs.length;
   $('adminActiveSubs').textContent = users.filter(u => isSubscriptionActive(u)).length;
   $('adminPendingConfirm').textContent = paymentNotifications.filter(n => n.status === 'pending').length;
 
@@ -1983,15 +2077,6 @@ async function renderSuperAdminDashboard(){
       </td>
     </tr>
   `).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No payment notifications yet.</td></tr>`;
-
-  $('adminLoginsTableBody').innerHTML = loginAuditLogs.map(l => `
-    <tr>
-      <td>${l.timestamp}</td>
-      <td><strong>${l.hotelName}</strong></td>
-      <td>${l.email}</td>
-      <td><span class="badge ${l.email === SUPER_ADMIN_EMAIL ? 'admin-badge' : 'paid'}">${l.role}</span></td>
-    </tr>
-  `).join('');
 }
 
 // ----------------- LOAD SPECIFIC TENANT POS DATA -----------------
