@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Hotel & Breakfast POS Multi-Tenant System</title>
+<title>Breakfast & Tiffin Billing POS — Made for Small Hotels & Lodges</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Outfit:wght@700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -11,6 +11,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<!-- Sends the automatic daily report email to each hotel owner -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --bg:#0A0F1D;
@@ -91,6 +93,15 @@
   .authMsg.success { color: #065F46; background: #D1FAE5; display: block; }
   .authSwitchRow { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
   .authSwitchRow a { color: var(--teal); font-weight: 800; cursor: pointer; text-decoration: underline; }
+  .waSupportLink { display:block; margin-top:14px; font-size:12px; font-weight:800; color:#25D366; text-decoration:none; }
+  .waSupportLink:hover { text-decoration:underline; }
+  #whatsappFloatBtn {
+    position: fixed; right: 18px; bottom: 18px; z-index: 500;
+    width: 52px; height: 52px; border-radius: 50%; background:#25D366; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:26px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35); text-decoration:none; cursor:pointer;
+  }
+  #whatsappFloatBtn:hover { filter:brightness(1.06); }
 
   /* Subscription plan cards */
   .planGrid{display:flex;flex-direction:column;gap:9px;text-align:left;}
@@ -621,13 +632,15 @@
 </head>
 <body>
 
+<a id="whatsappFloatBtn" href="#" target="_blank" rel="noopener" title="Chat with support on WhatsApp">💬</a>
+
 <!-- AUTHENTICATION OVERLAY -->
 <div id="authOverlay">
   <!-- LOGIN VIEW -->
   <div class="authCard" id="loginCard">
     <div class="hotelCrestBadge" style="margin: 0 auto 14px;" id="authLogoLogin">POS</div>
     <h2>Billing Terminal Login</h2>
-    <p>Sign in with your Email ID &amp; Password</p>
+    <p>Simple daily billing for small hotels, lodges &amp; tiffin centers</p>
     <div class="authMsg" id="loginMsg"></div>
     <input type="email" id="loginEmail" placeholder="Email Address" autocomplete="email">
     <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
@@ -635,13 +648,14 @@
     <div class="authSwitchRow">
       New Hotel / Client? <a id="showRegisterLink">Create New Rental ID</a>
     </div>
+    <a id="whatsappSupportLink" class="waSupportLink" target="_blank" rel="noopener">💬 Need help? Chat with us on WhatsApp</a>
   </div>
 
   <!-- REGISTER / CREATE RENTAL ID VIEW -->
   <div class="authCard" id="registerCard" style="display:none;">
     <div class="hotelCrestBadge" style="margin: 0 auto 14px;" id="authLogoReg">POS</div>
     <h2>Register Rental Account</h2>
-    <p>Set up your hotel name, logo &amp; credentials</p>
+    <p>Built for breakfast/tiffin counters, small hotels &amp; lodges</p>
     <div class="authMsg" id="regMsg"></div>
     <input type="text" id="regHotelName" placeholder="Hotel / Restaurant Name">
     <input type="text" id="regOwnerName" placeholder="Owner / Manager Name">
@@ -674,6 +688,7 @@
     <div class="authSwitchRow">
       Already have a rental ID? <a id="showLoginLink">Back to Login</a>
     </div>
+    <a id="whatsappSupportLinkReg" class="waSupportLink" target="_blank" rel="noopener">💬 Need help setting up? Chat with us on WhatsApp</a>
   </div>
 </div>
 
@@ -839,6 +854,21 @@
           <input id="setDailyTarget" type="number" min="0" placeholder="e.g. 15000">
           <label>Estimated Food Cost Margin % (For Profit)</label>
           <input id="setCostMarginPct" type="number" min="0" max="100" placeholder="e.g. 40">
+          <hr style="border-color:var(--line);margin:14px 0;">
+          <label style="margin-top:0;">📧 Daily Report — Send To Email</label>
+          <input id="setReportEmail" type="email" placeholder="owner@example.com">
+          <label>📲 Daily Report — WhatsApp Number (10 digits)</label>
+          <input id="setReportWhatsapp" type="tel" maxlength="10" inputmode="numeric" placeholder="e.g. 9876543210">
+          <label>⏰ Closing Time (auto-report checks after this time)</label>
+          <input id="setReportClosingTime" type="time" value="22:00">
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+            <input id="setAutoEmailEnabled" type="checkbox" style="width:auto;margin:0;">
+            <span style="font-weight:600;">Auto-email today's report at closing time (needs this app open in a browser)</span>
+          </label>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button type="button" class="btn secondary" id="sendReportEmailNowBtn" style="width:auto;padding:8px 14px;">📧 Send Report Now</button>
+            <button type="button" class="btn secondary" id="sendReportWhatsappNowBtn" style="width:auto;padding:8px 14px;">📲 Send via WhatsApp</button>
+          </div>
           <button class="btn secondary" id="saveSettingsBtn" style="margin-top:10px;">Save Defaults</button>
         </div>
       </div>
@@ -1202,6 +1232,27 @@
 
 <script>
 const SUPER_ADMIN_EMAIL = "dharunlogeshmdu@gmail.com";
+
+// ----------------- WHATSAPP SUPPORT & ONBOARDING -----------------
+// Replace with your real WhatsApp support number in international format —
+// country code + number, no plus sign, no spaces/dashes. e.g. "919876543210" for India.
+const SUPPORT_WHATSAPP_NUMBER = "91XXXXXXXXXX";
+
+function whatsappLink(message){
+  return `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+function updateWhatsappSupportLinks(){
+  const loginLink = $('whatsappSupportLink');
+  const regLink = $('whatsappSupportLinkReg');
+  const floatBtn = $('whatsappFloatBtn');
+  if(loginLink) loginLink.href = whatsappLink('Hi! I need help logging in to my billing account.');
+  if(regLink) regLink.href = whatsappLink('Hi! I need help setting up my new hotel/tiffin billing account.');
+  if(floatBtn){
+    const who = currentUser ? ` (${currentUser.hotelName || currentUser.name}, ${currentUser.email})` : '';
+    floatBtn.href = whatsappLink(`Hi! I need support with my billing account${who}.`);
+  }
+}
 let users = [];
 let paymentNotifications = [];
 let currentUser = null;
@@ -1209,7 +1260,7 @@ let currentUser = null;
 let bills = [];
 let demandLog = [];
 let menuItems = [];
-let settings = { resortName:"Sunrise Breakfast Billing", logoUrl:"", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light" };
+let settings = { resortName:"Sunrise Breakfast Billing", logoUrl:"", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light", reportEmail:"", reportWhatsapp:"", reportClosingTime:"22:00", autoEmailEnabled:false, lastAutoReportDate:null };
 let cart = [];
 let currentCat = 'all';
 let calDate = new Date();
@@ -1356,6 +1407,32 @@ try{
 }catch(e){
   console.warn('Cloud storage not configured yet — running on this device only. See FIREBASE_CONFIG setup notes.', e);
   cloudReady = false;
+}
+
+// ----------------- DAILY OWNER REPORT (EMAIL) SETUP -----------------
+// Automatically emails each hotel owner their end-of-day sales summary — no backend needed,
+// EmailJS sends the email straight from the browser using your own free EmailJS account.
+//   1. Create a free account at https://www.emailjs.com (no credit card).
+//   2. Email Services -> Add a service (e.g. connect your Gmail) -> note the Service ID.
+//   3. Email Templates -> create a template with variables: {{to_email}}, {{hotel_name}},
+//      {{report_date}}, {{report_body}} -> note the Template ID.
+//   4. Account -> General -> copy your Public Key.
+//   5. Paste all three below. Each hotel owner sets their own report email + closing time
+//      from their Settings panel inside the app.
+// Until this is filled in, the app skips auto-email and just shows a "Send via WhatsApp"
+// option instead so the daily report is still usable.
+const EMAILJS_PUBLIC_KEY = "PASTE_YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID = "PASTE_YOUR_EMAILJS_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "PASTE_YOUR_EMAILJS_TEMPLATE_ID";
+let emailReportReady = false;
+try{
+  if(window.emailjs && EMAILJS_PUBLIC_KEY.indexOf('PASTE_') !== 0){
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    emailReportReady = true;
+  }
+}catch(e){
+  console.warn('Daily email report not configured yet — see EMAILJS setup notes.', e);
+  emailReportReady = false;
 }
 
 function sanitizeStorageKey(key){
@@ -1638,18 +1715,6 @@ function sanitizeEmailForKey(email){
   return email.toLowerCase().replace(/[^a-z0-9]/g, '_');
 }
 
-async function adminEditUserId(email){
-  const tenant = users.find(u => u.email === email);
-  if(!tenant) return;
-  const input = prompt(`Set new Owner / Manager name for ${tenant.hotelName}:`, tenant.name || '');
-  if(input === null) return;
-  const trimmed = input.trim();
-  if(!trimmed){ alert('Name cannot be empty.'); return; }
-  tenant.name = trimmed;
-  await storageSet('pos_master_users', JSON.stringify(users));
-  await renderSuperAdminDashboard();
-}
-
 async function adminEditUserEmail(oldEmail){
   const tenant = users.find(u => u.email === oldEmail);
   if(!tenant) return;
@@ -1761,6 +1826,7 @@ function showAuthOverlay(){
   $('loginCard').style.display = 'block';
   $('registerCard').style.display = 'none';
   $('loginPassword').value = '';
+  updateWhatsappSupportLinks();
   // Pull the latest accounts from the cloud so a rental ID created on another device
   // (or by the admin) is recognized here right away.
   loadMasterData().catch(()=>{});
@@ -2036,7 +2102,6 @@ async function renderSuperAdminDashboard(){
 
     const actions = isAdmin ? '<span class="small">—</span>' : `
       <div style="display:flex;gap:5px;flex-wrap:wrap;">
-        <button class="linkbtn" onclick="adminEditUserId('${u.email}')">✎ Edit Name</button>
         <button class="linkbtn" onclick="adminEditUserEmail('${u.email}')">✎ Edit Email</button>
         <button class="linkbtn" onclick="adminEditRenewalDate('${u.email}')">✎ Edit Date</button>
         <button class="linkbtn" onclick="adminOpenStatement('${u.email}')">📄 Statement</button>
@@ -2083,6 +2148,7 @@ async function renderSuperAdminDashboard(){
 async function loadTenantData(){
   if(!currentUser) return;
 
+  updateWhatsappSupportLinks();
   const isSuperAdmin = currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL;
   // Toggle Admin Hub button
   $('openAdminHubBtn').style.display = isSuperAdmin ? 'flex' : 'none';
@@ -2130,8 +2196,19 @@ async function loadTenantData(){
       defaultStaff: currentUser.name || "Cashier",
       dailyTarget: 15000,
       costMarginPct: 40,
-      theme: "light"
+      theme: "light",
+      reportEmail: currentUser.email || "",
+      reportWhatsapp: currentUser.mobile || "",
+      reportClosingTime: "22:00",
+      autoEmailEnabled: false,
+      lastAutoReportDate: null
     };
+    // Backfill report fields for tenants saved before this feature existed
+    if(settings.reportEmail === undefined) settings.reportEmail = currentUser.email || "";
+    if(settings.reportWhatsapp === undefined) settings.reportWhatsapp = currentUser.mobile || "";
+    if(settings.reportClosingTime === undefined) settings.reportClosingTime = "22:00";
+    if(settings.autoEmailEnabled === undefined) settings.autoEmailEnabled = false;
+    if(settings.lastAutoReportDate === undefined) settings.lastAutoReportDate = null;
   }catch(e){ /* defaults */ }
 
   try{
@@ -2145,7 +2222,11 @@ async function loadTenantData(){
   $('setDefaultStaff').value = settings.defaultStaff || currentUser.name || "";
   $('setDailyTarget').value = settings.dailyTarget || 15000;
   $('setCostMarginPct').value = settings.costMarginPct || 40;
-  
+  $('setReportEmail').value = settings.reportEmail || currentUser.email || "";
+  $('setReportWhatsapp').value = settings.reportWhatsapp || currentUser.mobile || "";
+  $('setReportClosingTime').value = settings.reportClosingTime || "22:00";
+  $('setAutoEmailEnabled').checked = !!settings.autoEmailEnabled;
+
   $('taxPct').value = settings.taxPct || 0;
   $('staffName').value = settings.defaultStaff || currentUser.name || "";
 
@@ -2157,6 +2238,7 @@ async function loadTenantData(){
   renderCart();
   renderList();
   updateStats();
+  startDailyReportScheduler();
   if(isSuperAdmin){
     await renderSuperAdminDashboard();
   } else {
@@ -2798,6 +2880,113 @@ $('openZReportBtn').addEventListener('click', ()=>{
   $('modalOverlay').classList.add('show');
 });
 
+// ----------------- DAILY OWNER REPORT (auto-email + WhatsApp) -----------------
+function buildDailyReportSummary(dateStr){
+  const dayBills = bills.filter(b => b.date === dateStr);
+  const totalRev = dayBills.reduce((s, b) => s + b.total, 0);
+  const paidBills = dayBills.filter(b => b.paymentStatus === 'Paid');
+  const pendingBills = dayBills.filter(b => b.paymentStatus === 'Pending');
+  const cashRev = paidBills.filter(b => b.paymentMode === 'Cash').reduce((s, b) => s + b.total, 0);
+  const upiRev = paidBills.filter(b => b.paymentMode === 'UPI').reduce((s, b) => s + b.total, 0);
+  const cardRev = paidBills.filter(b => b.paymentMode === 'Card').reduce((s, b) => s + b.total, 0);
+  const pendingAmt = pendingBills.reduce((s, b) => s + b.total, 0);
+
+  const itemMap = {};
+  dayBills.forEach(b => (b.items || []).forEach(i => { itemMap[i.name] = (itemMap[i.name] || 0) + i.qty; }));
+  const topItems = Object.entries(itemMap).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+  return { dateStr, billCount: dayBills.length, totalRev, cashRev, upiRev, cardRev, pendingAmt, topItems };
+}
+
+function formatDailyReportText(summary){
+  const hotel = settings.resortName || (currentUser && currentUser.hotelName) || 'Your Hotel';
+  const lines = [
+    `📊 Daily Sales Report — ${hotel}`,
+    `Date: ${summary.dateStr}`,
+    ``,
+    `Total Bills: ${summary.billCount}`,
+    `Total Sales: ${rupee(summary.totalRev)}`,
+    ``,
+    `Cash: ${rupee(summary.cashRev)}`,
+    `UPI: ${rupee(summary.upiRev)}`,
+    `Card: ${rupee(summary.cardRev)}`,
+    `Pending: ${rupee(summary.pendingAmt)}`,
+  ];
+  if(summary.topItems.length){
+    lines.push('', 'Top Items Sold:');
+    summary.topItems.forEach(([name, qty]) => lines.push(`- ${name} x${qty}`));
+  }
+  return lines.join('\n');
+}
+
+async function sendDailyReportEmail(dateStr, { silent } = {}){
+  const summary = buildDailyReportSummary(dateStr);
+  const reportText = formatDailyReportText(summary);
+  const toEmail = (settings.reportEmail || (currentUser && currentUser.email) || '').trim();
+
+  if(!emailReportReady){
+    if(!silent) alert('Auto-email isn\'t set up yet. See the EMAILJS setup notes in Settings, or use "Send via WhatsApp" instead.');
+    return false;
+  }
+  if(!toEmail){
+    if(!silent) alert('Add a report email address in Settings first.');
+    return false;
+  }
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: toEmail,
+      hotel_name: settings.resortName || (currentUser && currentUser.hotelName) || 'Your Hotel',
+      report_date: dateStr,
+      report_body: reportText
+    });
+    if(!silent) alert(`✅ Report emailed to ${toEmail}.`);
+    return true;
+  }catch(e){
+    console.warn('Daily report email failed', e);
+    if(!silent) alert('⚠ Could not send the email report. Check your EMAILJS setup.');
+    return false;
+  }
+}
+
+function sendDailyReportWhatsapp(dateStr){
+  const summary = buildDailyReportSummary(dateStr);
+  const reportText = formatDailyReportText(summary);
+  const number = (settings.reportWhatsapp || (currentUser && currentUser.mobile) || '').replace(/\D/g, '');
+  const target = number ? `91${number.slice(-10)}` : SUPPORT_WHATSAPP_NUMBER;
+  window.open(`https://wa.me/${target}?text=${encodeURIComponent(reportText)}`, '_blank');
+}
+
+let dailyReportTimerId = null;
+function startDailyReportScheduler(){
+  if(dailyReportTimerId) clearInterval(dailyReportTimerId);
+  // Checks every 5 minutes while the app is open. This can only fire while a browser tab
+  // is open on/after closing time — a static, backend-free page has no way to run a timer
+  // when nobody has it open. Keeping this tab open (e.g. on the billing counter's PC/tablet)
+  // through closing time is what makes the auto-send actually happen.
+  dailyReportTimerId = setInterval(checkAndSendDailyReport, 5 * 60 * 1000);
+  checkAndSendDailyReport();
+}
+
+async function checkAndSendDailyReport(){
+  if(!currentUser || currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL) return;
+  if(!settings.autoEmailEnabled) return;
+  const today = todayStr();
+  if(settings.lastAutoReportDate === today) return;
+
+  const closing = settings.reportClosingTime || '22:00';
+  const nowHHMM = new Date().toTimeString().slice(0,5);
+  if(nowHHMM < closing) return;
+
+  const sent = await sendDailyReportEmail(today, { silent: true });
+  if(sent){
+    settings.lastAutoReportDate = today;
+    await saveSettings();
+  }
+}
+
+$('sendReportEmailNowBtn').addEventListener('click', ()=> sendDailyReportEmail(todayStr()));
+$('sendReportWhatsappNowBtn').addEventListener('click', ()=> sendDailyReportWhatsapp(todayStr()));
+
 function addToCart(itemId){
   const item = menuItems.find(i=>i.id===itemId);
   if(!item) return;
@@ -2940,6 +3129,10 @@ $('saveSettingsBtn').addEventListener('click', async ()=>{
   settings.defaultStaff = $('setDefaultStaff').value.trim();
   settings.dailyTarget = parseFloat($('setDailyTarget').value) || 15000;
   settings.costMarginPct = parseFloat($('setCostMarginPct').value) || 40;
+  settings.reportEmail = $('setReportEmail').value.trim();
+  settings.reportWhatsapp = $('setReportWhatsapp').value.trim();
+  settings.reportClosingTime = $('setReportClosingTime').value || "22:00";
+  settings.autoEmailEnabled = $('setAutoEmailEnabled').checked;
   await saveSettings();
 
   // Update current user cache
