@@ -65,6 +65,30 @@
     --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
   }
 
+  /* Professional Theme — white background, dark readable text, same brand
+     teal/amber/coral accents deepened for contrast, plus a faint brand-matching
+     (teacup + steam) pattern for a touch of texture instead of a flat white. */
+  body.professional-mode{
+    --bg:#F4F6F9;
+    --panel:#FFFFFF;
+    --ink:#0F172A;
+    --teal:#0D9488;
+    --teal-dark:#0B7A70;
+    --teal-light:#E3F7F3;
+    --amber:#C2740A;
+    --amber-light:#FDF1DE;
+    --coral:#DC2626;
+    --coral-light:#FEE2E2;
+    --line:#E2E8F0;
+    --muted:#5B6B82;
+    --btn-text:#FFFFFF;
+    --shadow-sm: 0 2px 10px rgba(15,23,42,0.07);
+    --shadow-md: 0 14px 34px rgba(15,23,42,0.10), 0 0 20px rgba(13,148,136,0.08);
+    --shadow-lg: 0 24px 60px rgba(15,23,42,0.14);
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" opacity="0.05"><g fill="none" stroke="%230D9488" stroke-width="1.8"><circle cx="34" cy="42" r="15"/><path d="M23 42 Q34 27 45 42 T66 42"/></g></svg>');
+    background-repeat: repeat;
+  }
+
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html{scroll-behavior:smooth;overflow-x:hidden;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter', sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s ease, color .25s ease;overflow-x:hidden;width:100%;}
@@ -93,16 +117,6 @@
   .authMsg.success { color: #065F46; background: #D1FAE5; display: block; }
   .authSwitchRow { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
   .authSwitchRow a { color: var(--teal); font-weight: 800; cursor: pointer; text-decoration: underline; }
-  .waSupportLink { display:block; margin-top:14px; font-size:12px; font-weight:800; color:#25D366; text-decoration:none; }
-  .waSupportLink:hover { text-decoration:underline; }
-  #whatsappFloatBtn {
-    position: fixed; right: 18px; bottom: 18px; z-index: 500;
-    width: 52px; height: 52px; border-radius: 50%; background:#25D366; color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:26px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35); text-decoration:none; cursor:pointer;
-  }
-  #whatsappFloatBtn:hover { filter:brightness(1.06); }
-
   /* Subscription plan cards */
   .planGrid{display:flex;flex-direction:column;gap:9px;text-align:left;}
   .planCard{
@@ -403,6 +417,27 @@
   .btn.danger-action{background:#DC2626;color:#FFF;box-shadow:0 4px 12px rgba(220,38,38,0.3);}
   .btn:disabled{opacity:0.4;cursor:not-allowed;}
 
+  .cartMoreToggle{
+    width:100%;margin-top:14px;padding:11px 14px;border-radius:10px;
+    border:1.5px dashed var(--line);background:var(--bg);color:var(--muted);
+    font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;
+    cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    transition:all .15s ease;font-family:'Inter';
+  }
+  .cartMoreToggle:hover{border-color:var(--teal);color:var(--teal);}
+  .cartMoreToggle .chev{transition:transform .2s ease;font-size:13px;}
+  .cartMoreToggle.open .chev{transform:rotate(90deg);}
+  .cartMoreWrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease;}
+  .cartMoreWrap.open{grid-template-rows:1fr;}
+  .cartMoreInner{overflow:hidden;}
+  @media(max-width:960px){
+    .cartStickyFooter{
+      position:sticky;bottom:0;z-index:5;background:var(--panel);
+      padding-top:10px;border-top:1.5px solid var(--line);
+      box-shadow:0 -10px 16px -4px rgba(0,0,0,0.22);
+    }
+  }
+
   .filters{display:flex;gap:9px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap;}
   .filters > div{flex:1;min-width:110px;}
   .filters label{margin:0 0 5px;}
@@ -632,7 +667,6 @@
 </head>
 <body>
 
-<a id="whatsappFloatBtn" href="#" target="_blank" rel="noopener" title="Chat with support on WhatsApp">💬</a>
 
 <!-- AUTHENTICATION OVERLAY -->
 <div id="authOverlay">
@@ -648,7 +682,6 @@
     <div class="authSwitchRow">
       New Hotel / Client? <a id="showRegisterLink">Create New Rental ID</a>
     </div>
-    <a id="whatsappSupportLink" class="waSupportLink" target="_blank" rel="noopener">💬 Need help? Chat with us on WhatsApp</a>
   </div>
 
   <!-- REGISTER / CREATE RENTAL ID VIEW -->
@@ -688,7 +721,6 @@
     <div class="authSwitchRow">
       Already have a rental ID? <a id="showLoginLink">Back to Login</a>
     </div>
-    <a id="whatsappSupportLinkReg" class="waSupportLink" target="_blank" rel="noopener">💬 Need help setting up? Chat with us on WhatsApp</a>
   </div>
 </div>
 
@@ -789,6 +821,15 @@
           <div class="cartDropdown" id="cartDropdown"></div>
         </div>
 
+        <div class="cartList" id="cartList"></div>
+
+        <button type="button" class="cartMoreToggle" id="cartMoreToggle">
+          <span>👤 Customer, discount, tax &amp; payment</span>
+          <span class="chev">▸</span>
+        </button>
+        <div class="cartMoreWrap" id="cartMoreWrap">
+        <div class="cartMoreInner">
+
         <div class="row2">
           <div>
             <label>Customer Name <span class="optTag">(opt)</span></label>
@@ -799,8 +840,6 @@
             <input id="custPhone" placeholder="Phone">
           </div>
         </div>
-
-        <div class="cartList" id="cartList"></div>
 
         <div class="row2">
           <div>
@@ -831,15 +870,7 @@
         <label>Served By</label>
         <input id="staffName" placeholder="Staff / Cashier name">
 
-        <div class="totalsbox">
-          <div class="line"><span>Subtotal</span><span id="calcSubtotal">₹0.00</span></div>
-          <div class="line"><span>Discount</span><span id="calcDiscount">−₹0.00</span></div>
-          <div class="line"><span>Tax</span><span id="calcTax">+₹0.00</span></div>
-          <div class="line grand"><span>Total</span><span id="calcTotal">₹0.00</span></div>
-        </div>
-
-        <button class="btn" id="saveBillBtn" disabled>Save &amp; Print Bill</button>
-        <button class="linkbtn" id="toggleSettings" style="margin-top:12px;display:block;">⚙ Configure Hotel &amp; Logo Settings</button>
+        <button class="linkbtn" id="toggleSettings" style="margin-top:14px;display:block;">⚙ Configure Hotel &amp; Logo Settings</button>
 
         <div id="settingsPanel" style="display:none;margin-top:14px;background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--line);">
           <label style="margin-top:0;">Hotel / Restaurant Name</label>
@@ -857,8 +888,6 @@
           <hr style="border-color:var(--line);margin:14px 0;">
           <label style="margin-top:0;">📧 Daily Report — Send To Email</label>
           <input id="setReportEmail" type="email" placeholder="owner@example.com">
-          <label>📲 Daily Report — WhatsApp Number (10 digits)</label>
-          <input id="setReportWhatsapp" type="tel" maxlength="10" inputmode="numeric" placeholder="e.g. 9876543210">
           <label>⏰ Closing Time (auto-report checks after this time)</label>
           <input id="setReportClosingTime" type="time" value="22:00">
           <label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
@@ -867,9 +896,21 @@
           </label>
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
             <button type="button" class="btn secondary" id="sendReportEmailNowBtn" style="width:auto;padding:8px 14px;">📧 Send Report Now</button>
-            <button type="button" class="btn secondary" id="sendReportWhatsappNowBtn" style="width:auto;padding:8px 14px;">📲 Send via WhatsApp</button>
           </div>
           <button class="btn secondary" id="saveSettingsBtn" style="margin-top:10px;">Save Defaults</button>
+        </div>
+
+        </div>
+        </div>
+
+        <div class="cartStickyFooter">
+          <div class="totalsbox">
+            <div class="line"><span>Subtotal</span><span id="calcSubtotal">₹0.00</span></div>
+            <div class="line"><span>Discount</span><span id="calcDiscount">−₹0.00</span></div>
+            <div class="line"><span>Tax</span><span id="calcTax">+₹0.00</span></div>
+            <div class="line grand"><span>Total</span><span id="calcTotal">₹0.00</span></div>
+          </div>
+          <button class="btn" id="saveBillBtn" disabled>Save &amp; Print Bill</button>
         </div>
       </div>
     </div>
@@ -1233,26 +1274,6 @@
 <script>
 const SUPER_ADMIN_EMAIL = "dharunlogeshmdu@gmail.com";
 
-// ----------------- WHATSAPP SUPPORT & ONBOARDING -----------------
-// Replace with your real WhatsApp support number in international format —
-// country code + number, no plus sign, no spaces/dashes. e.g. "919876543210" for India.
-const SUPPORT_WHATSAPP_NUMBER = "91XXXXXXXXXX";
-
-function whatsappLink(message){
-  return `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-}
-
-function updateWhatsappSupportLinks(){
-  const loginLink = $('whatsappSupportLink');
-  const regLink = $('whatsappSupportLinkReg');
-  const floatBtn = $('whatsappFloatBtn');
-  if(loginLink) loginLink.href = whatsappLink('Hi! I need help logging in to my billing account.');
-  if(regLink) regLink.href = whatsappLink('Hi! I need help setting up my new hotel/tiffin billing account.');
-  if(floatBtn){
-    const who = currentUser ? ` (${currentUser.hotelName || currentUser.name}, ${currentUser.email})` : '';
-    floatBtn.href = whatsappLink(`Hi! I need support with my billing account${who}.`);
-  }
-}
 let users = [];
 let paymentNotifications = [];
 let currentUser = null;
@@ -1260,7 +1281,7 @@ let currentUser = null;
 let bills = [];
 let demandLog = [];
 let menuItems = [];
-let settings = { resortName:"Sunrise Breakfast Billing", logoUrl:"", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light", reportEmail:"", reportWhatsapp:"", reportClosingTime:"22:00", autoEmailEnabled:false, lastAutoReportDate:null };
+let settings = { resortName:"Sunrise Breakfast Billing", logoUrl:"", taxPct:0, defaultStaff:"", dailyTarget:15000, costMarginPct:40, theme:"light", reportEmail:"", reportClosingTime:"22:00", autoEmailEnabled:false, lastAutoReportDate:null };
 let cart = [];
 let currentCat = 'all';
 let calDate = new Date();
@@ -1325,17 +1346,22 @@ const DEFAULT_MENU = [
 ];
 
 function initials(name){
-  return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  if(!name) return '';
+  // Only count words that actually start with a letter, so a qualifier like
+  // "(2pc)" is skipped instead of contributing stray punctuation — e.g.
+  // "Idli (2pc)" gives "ID", not "I(".
+  const words = name.trim().split(/\s+/).filter(w => /[A-Za-z]/.test(w[0]));
+  if(words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  if(words.length === 1) return words[0].replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase();
+  return name.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase();
 }
 
 function getInitials(name){
   if(!name) return 'POS';
-  const clean = name.trim();
-  const words = clean.split(/\s+/).filter(w => w.length > 0);
-  if(words.length === 1){
-    return words[0].slice(0, 2).toUpperCase();
-  }
-  return (words[0][0] + words[1][0]).toUpperCase();
+  const words = name.trim().split(/\s+/).filter(w => /[A-Za-z]/.test(w[0]));
+  if(words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  if(words.length === 1) return words[0].replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase();
+  return 'POS';
 }
 
 function updateBrandDisplays(hotelName, logoUrl){
@@ -1419,8 +1445,8 @@ try{
 //   4. Account -> General -> copy your Public Key.
 //   5. Paste all three below. Each hotel owner sets their own report email + closing time
 //      from their Settings panel inside the app.
-// Until this is filled in, the app skips auto-email and just shows a "Send via WhatsApp"
-// option instead so the daily report is still usable.
+// Until this is filled in, the app skips auto-email — use "Send Report Now"
+// once EmailJS is configured.
 const EMAILJS_PUBLIC_KEY = "PASTE_YOUR_EMAILJS_PUBLIC_KEY";
 const EMAILJS_SERVICE_ID = "PASTE_YOUR_EMAILJS_SERVICE_ID";
 const EMAILJS_TEMPLATE_ID = "PASTE_YOUR_EMAILJS_TEMPLATE_ID";
@@ -1826,7 +1852,6 @@ function showAuthOverlay(){
   $('loginCard').style.display = 'block';
   $('registerCard').style.display = 'none';
   $('loginPassword').value = '';
-  updateWhatsappSupportLinks();
   // Pull the latest accounts from the cloud so a rental ID created on another device
   // (or by the admin) is recognized here right away.
   loadMasterData().catch(()=>{});
@@ -2148,7 +2173,6 @@ async function renderSuperAdminDashboard(){
 async function loadTenantData(){
   if(!currentUser) return;
 
-  updateWhatsappSupportLinks();
   const isSuperAdmin = currentUser.email.toLowerCase() === SUPER_ADMIN_EMAIL;
   // Toggle Admin Hub button
   $('openAdminHubBtn').style.display = isSuperAdmin ? 'flex' : 'none';
@@ -2198,14 +2222,12 @@ async function loadTenantData(){
       costMarginPct: 40,
       theme: "light",
       reportEmail: currentUser.email || "",
-      reportWhatsapp: currentUser.mobile || "",
       reportClosingTime: "22:00",
       autoEmailEnabled: false,
       lastAutoReportDate: null
     };
     // Backfill report fields for tenants saved before this feature existed
     if(settings.reportEmail === undefined) settings.reportEmail = currentUser.email || "";
-    if(settings.reportWhatsapp === undefined) settings.reportWhatsapp = currentUser.mobile || "";
     if(settings.reportClosingTime === undefined) settings.reportClosingTime = "22:00";
     if(settings.autoEmailEnabled === undefined) settings.autoEmailEnabled = false;
     if(settings.lastAutoReportDate === undefined) settings.lastAutoReportDate = null;
@@ -2223,7 +2245,6 @@ async function loadTenantData(){
   $('setDailyTarget').value = settings.dailyTarget || 15000;
   $('setCostMarginPct').value = settings.costMarginPct || 40;
   $('setReportEmail').value = settings.reportEmail || currentUser.email || "";
-  $('setReportWhatsapp').value = settings.reportWhatsapp || currentUser.mobile || "";
   $('setReportClosingTime').value = settings.reportClosingTime || "22:00";
   $('setAutoEmailEnabled').checked = !!settings.autoEmailEnabled;
 
@@ -2880,7 +2901,7 @@ $('openZReportBtn').addEventListener('click', ()=>{
   $('modalOverlay').classList.add('show');
 });
 
-// ----------------- DAILY OWNER REPORT (auto-email + WhatsApp) -----------------
+// ----------------- DAILY OWNER REPORT (auto-email) -----------------
 function buildDailyReportSummary(dateStr){
   const dayBills = bills.filter(b => b.date === dateStr);
   const totalRev = dayBills.reduce((s, b) => s + b.total, 0);
@@ -2925,7 +2946,7 @@ async function sendDailyReportEmail(dateStr, { silent } = {}){
   const toEmail = (settings.reportEmail || (currentUser && currentUser.email) || '').trim();
 
   if(!emailReportReady){
-    if(!silent) alert('Auto-email isn\'t set up yet. See the EMAILJS setup notes in Settings, or use "Send via WhatsApp" instead.');
+    if(!silent) alert('Auto-email isn\'t set up yet. See the EMAILJS setup notes in Settings.');
     return false;
   }
   if(!toEmail){
@@ -2946,14 +2967,6 @@ async function sendDailyReportEmail(dateStr, { silent } = {}){
     if(!silent) alert('⚠ Could not send the email report. Check your EMAILJS setup.');
     return false;
   }
-}
-
-function sendDailyReportWhatsapp(dateStr){
-  const summary = buildDailyReportSummary(dateStr);
-  const reportText = formatDailyReportText(summary);
-  const number = (settings.reportWhatsapp || (currentUser && currentUser.mobile) || '').replace(/\D/g, '');
-  const target = number ? `91${number.slice(-10)}` : SUPPORT_WHATSAPP_NUMBER;
-  window.open(`https://wa.me/${target}?text=${encodeURIComponent(reportText)}`, '_blank');
 }
 
 let dailyReportTimerId = null;
@@ -2985,7 +2998,6 @@ async function checkAndSendDailyReport(){
 }
 
 $('sendReportEmailNowBtn').addEventListener('click', ()=> sendDailyReportEmail(todayStr()));
-$('sendReportWhatsappNowBtn').addEventListener('click', ()=> sendDailyReportWhatsapp(todayStr()));
 
 function addToCart(itemId){
   const item = menuItems.find(i=>i.id===itemId);
@@ -3017,6 +3029,9 @@ function resetBillInputs(){
   $('payStatusChips').querySelectorAll('.chipOption').forEach(x => x.classList.remove('active'));
   $('payStatusChips').querySelector('[data-val="Paid"]').classList.add('active');
   $('paymentStatus').value = 'Paid';
+
+  $('cartMoreToggle').classList.remove('open');
+  $('cartMoreWrap').classList.remove('open');
 
   renderCart();
 }
@@ -3130,7 +3145,6 @@ $('saveSettingsBtn').addEventListener('click', async ()=>{
   settings.dailyTarget = parseFloat($('setDailyTarget').value) || 15000;
   settings.costMarginPct = parseFloat($('setCostMarginPct').value) || 40;
   settings.reportEmail = $('setReportEmail').value.trim();
-  settings.reportWhatsapp = $('setReportWhatsapp').value.trim();
   settings.reportClosingTime = $('setReportClosingTime').value || "22:00";
   settings.autoEmailEnabled = $('setAutoEmailEnabled').checked;
   await saveSettings();
@@ -3186,12 +3200,28 @@ $('saveBillBtn').addEventListener('click', async ()=>{
   await saveBills();
 
   resetBillInputs();
-  $('cartCardContainer').classList.remove('open');
+  closeCartSheetInstantly();
   renderList();
   updateStats();
 
   showReceipt(bill);
 });
+
+// On mobile, the "Current Bill" panel is a sheet that normally slides
+// shut with a smooth animation. Right after saving a bill, the receipt
+// popup appears at the same moment — and because the popup's backdrop
+// is semi-transparent, the sheet's ~300ms slide-down was visible through
+// it, briefly flashing the "Billing Records" list underneath as it
+// collapsed. This snaps the sheet shut instantly (no animation) only for
+// this auto-close, so nothing is left moving behind the popup. Manual
+// taps on the cart bar still open/close with the normal smooth slide.
+function closeCartSheetInstantly(){
+  const cartEl = $('cartCardContainer');
+  cartEl.style.transition = 'none';
+  cartEl.classList.remove('open');
+  void cartEl.offsetHeight; // flush the change immediately, before transitions are re-enabled
+  cartEl.style.transition = '';
+}
 
 function showReceipt(bill){
   const itemsHtml = bill.items.map(i=>`
@@ -3312,19 +3342,25 @@ function updateStats(){
   $('statPending').textContent = '₹'+pending.toFixed(0);
 }
 
+const THEME_CYCLE = ['light', 'dark', 'professional'];
+
 function applyTheme(theme){
   settings.theme = theme;
+  document.body.classList.remove('dark-mode', 'professional-mode');
   if(theme === 'dark'){
     document.body.classList.add('dark-mode');
     $('themeToggleBtn').innerHTML = '🟢 Emerald Theme';
+  } else if(theme === 'professional'){
+    document.body.classList.add('professional-mode');
+    $('themeToggleBtn').innerHTML = '⚪ Professional Theme';
   } else {
-    document.body.classList.remove('dark-mode');
     $('themeToggleBtn').innerHTML = '🔵 Ocean Theme';
   }
 }
 
 $('themeToggleBtn').addEventListener('click', async ()=>{
-  const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+  const current = THEME_CYCLE.includes(settings.theme) ? settings.theme : 'light';
+  const nextTheme = THEME_CYCLE[(THEME_CYCLE.indexOf(current) + 1) % THEME_CYCLE.length];
   applyTheme(nextTheme);
   await saveSettings();
 });
@@ -3371,6 +3407,13 @@ function initMobileCartToggle(){
   });
 }
 
+function initCartMoreToggle(){
+  $('cartMoreToggle').addEventListener('click', ()=>{
+    $('cartMoreToggle').classList.toggle('open');
+    $('cartMoreWrap').classList.toggle('open');
+  });
+}
+
 async function startApp(){
   await loadMasterData();
   await loadPlanSettings();
@@ -3379,6 +3422,7 @@ async function startApp(){
   initHubTabs();
   initCartItemSearch();
   initMobileCartToggle();
+  initCartMoreToggle();
 
   const saved = sessionStorage.getItem('pos_logged_user');
   if(saved){
